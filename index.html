@@ -890,20 +890,29 @@
         let dashboardData = null;
 
 // Charger les données depuis data.json
-fetch('data.json')
-    .then(response => response.json())
-    .then(data => {
-        dashboardData = data;
-        console.log('✅ Données chargées:', data.stats);
-        // Initialiser le dashboard après le chargement
-        if (typeof initDashboard === 'function') {
-            initDashboard();
-        }
-    })
-    .catch(error => {
-        console.error('❌ Erreur chargement données:', error);
-        document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h1>❌ Erreur</h1><p>Impossible de charger les données du dashboard.</p></div>';
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Chargement des données...');
+    
+    fetch('data.json')
+        .then(response => response.json())
+        .then(data => {
+            console.log('✅ Données chargées');
+            dashboardData = data;
+            
+            // Appeler toutes les fonctions d'initialisation
+            if (typeof initDashboard === 'function') {
+                initDashboard();
+            }
+            if (typeof initNavigation === 'function') {
+                initNavigation();
+            }
+            
+            console.log('✅ Dashboard prêt');
+        })
+        .catch(error => {
+            console.error('❌ Erreur:', error);
+        });
+});
         let charts = {};
         let dataTables = {};
 
@@ -1389,21 +1398,5 @@ function drawTimelines(d){const c=document.getElementById('timeline-container');
   </div>
   <div id="timeline-container"></div>
 </div>
-
-<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:0.9em; border-top:1px solid var(--border-color); margin-top:40px;">
-    <p>📊 Dashboard mis à jour automatiquement tous les jours à 17h30</p>
-    <p id="last-update"></p>
-</div>
-<script>
-// Afficher la date de dernière mise à jour
-fetch('data.json')
-    .then(r => r.json())
-    .then(data => {
-        if (data.stats && data.stats.period_end) {
-            document.getElementById('last-update').textContent = 
-                '🕐 Dernière mise à jour: ' + new Date().toLocaleString('fr-FR');
-        }
-    });
-</script>
 </body>
 </html>
