@@ -886,6 +886,10 @@
     </div>
 
     <script>
+        // TEST IMMEDIAT - S'affiche AVANT DOMContentLoaded
+        document.write('<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:blue;color:white;padding:30px;z-index:99999;font-size:24px;border-radius:12px;box-shadow:0 0 50px rgba(99,102,241,0.8);">🔵 SCRIPT CHARGÉ</div>');
+        console.log('🔵 SCRIPT INLINE EXÉCUTÉ');
+
         // Global data
         let dashboardData = null;
 
