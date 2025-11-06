@@ -4,7 +4,7 @@ Dashboard automatique des activités HubSpot pour Raphaël Cheminaud chez 13 Yea
 
 ## 🌐 Accès en ligne
 
-Le dashboard est accessible à l'adresse : **[À configurer après déploiement]**
+Le dashboard est accessible à l'adresse : **https://13yadmin.github.io/raphael-hubspot-dashboard/**
 
 ## 🔄 Mise à jour automatique
 
