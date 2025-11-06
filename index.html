@@ -1400,7 +1400,105 @@ document.addEventListener('DOMContentLoaded', function() {
     
 function initTimelines(){console.log("🎯 initTimelines appelé");if(!dashboardData||!dashboardData.work_analysis){console.error("❌ Pas de work_analysis");return;}const w=dashboardData.work_analysis;drawWorkSVG(w);drawTimelines(w)}
 function drawWorkSVG(d){const s=document.getElementById('chart-work');if(!s)return;s.innerHTML='';const p=40,w=1000,h=220,iw=w-2*p,ih=h-2*p,max=Math.max(...d.map(x=>x.dureeEffective),6),bw=iw/d.length*0.7;d.forEach((v,i)=>{const x=p+i*(iw/d.length)+((iw/d.length)-bw)/2,bh=(v.dureeEffective/max)*ih,y=p+(ih-bh);const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',bw);r.setAttribute('height',bh);r.setAttribute('rx',6);r.setAttribute('fill','#a855f7');r.setAttribute('opacity','0.8');s.appendChild(r);const l=document.createElementNS('http://www.w3.org/2000/svg','text');l.setAttribute('x',x+bw/2);l.setAttribute('y',p+ih+16);l.setAttribute('font-size',11);l.setAttribute('text-anchor','middle');l.setAttribute('fill','#94a3b8');l.textContent=new Date(v.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});s.appendChild(l);const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',x+bw/2);t.setAttribute('y',y-6);t.setAttribute('font-size',11);t.setAttribute('text-anchor','middle');t.setAttribute('fill','#a855f7');t.textContent=v.dureeEffective.toFixed(2)+'h';s.appendChild(t)})}
-function drawTimelines(d){const c=document.getElementById('timeline-container');if(!c)return;c.innerHTML='';d.forEach(v=>{const cd=document.createElement('div');cd.className='timeline-card';const dt=new Date(v.date);const ds=dt.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});const dc=ds.charAt(0).toUpperCase()+ds.slice(1);const hd=document.createElement('div');hd.className='timeline-header';hd.innerHTML=`<h4>${dc}</h4><div class="timeline-info">${v.nombreActions} actions | ${v.nombreSessions} sessions | <span style="color:var(--success);font-weight:600">${v.dureeEffective.toFixed(2)}h</span></div>`;cd.appendChild(hd);const hr=document.createElement('div');hr.className='hours-row';for(let i=0;i<24;i++){const h=document.createElement('div');h.textContent=i+'h';hr.appendChild(h)}cd.appendChild(hr);const tl=document.createElement('div');tl.className='timeline';v.sessions.forEach(s=>{const[sh,sm]=s.debut.split(':').map(Number);const st=sh*60+sm;const wd=Math.max((s.dureeMin/(24*60))*100,0.5);const lt=(st/(24*60))*100;const ss=document.createElement('div');ss.className='session';ss.style.left=lt+'%';ss.style.width=wd+'%';ss.title=`${s.debut}-${s.fin} (${s.dureeMin}min)`;if(s.dureeMin>10)ss.textContent=s.actions+' act.';tl.appendChild(ss)});const da=dashboardData.engagements.filter(e=>e.date===v.date);const ac={'EMAIL':'#3b82f6','CALL':'#10b981','TASK':'#f59e0b'};da.forEach(a=>{const[ah,am]=a.time.split(':').map(Number);const am2=ah*60+am;const lt=(am2/(24*60))*100;const dt2=document.createElement('div');dt2.className='action-dot';dt2.style.left=lt+'%';dt2.style.background=ac[a.type]||'#6366f1';dt2.title=`${a.time}-${a.type}`;tl.appendChild(dt2)});cd.appendChild(tl);const sd=document.createElement('div');sd.className='session-details';v.sessions.forEach((s,i)=>{const bx=document.createElement('div');bx.className='session-box';bx.innerHTML=`<div class="session-box-title">Session ${i+1}: ${s.debut} → ${s.fin}</div><div class="session-box-info">${s.dureeMin}min | ${s.actions} actions</div>`;sd.appendChild(bx)});cd.appendChild(sd);c.appendChild(cd)})
+function drawTimelines(workData) {
+  const container = document.getElementById('timeline-container');
+
+  workData.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'timeline-card';
+
+    const date = new Date(d.date);
+    const dateStr = date.toLocaleDateString('fr-FR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+    const dateStrCap = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'timeline-header';
+    header.innerHTML = `
+      <h4>${dateStrCap}</h4>
+      <div class="timeline-info">
+        ${d.nombreActions} actions | ${d.nombreSessions} sessions |
+        <span style="color:var(--green);font-weight:600">${d.dureeEffective.toFixed(2)}h</span>
+      </div>
+    `;
+    card.appendChild(header);
+
+    // Hours row
+    const hoursRow = document.createElement('div');
+    hoursRow.className = 'hours-row';
+    for (let i = 0; i < 24; i++) {
+      const h = document.createElement('div');
+      h.textContent = i + 'h';
+      hoursRow.appendChild(h);
+    }
+    card.appendChild(hoursRow);
+
+    // Timeline
+    const timeline = document.createElement('div');
+    timeline.className = 'timeline';
+
+    // Draw sessions
+    d.sessions.forEach(s => {
+      const [sh, sm] = s.debut.split(':').map(Number);
+      const start = sh * 60 + sm;
+      const width = Math.max((s.dureeMin / (24 * 60)) * 100, 0.5);
+      const left = (start / (24 * 60)) * 100;
+
+      const session = document.createElement('div');
+      session.className = 'session';
+      session.style.left = left + '%';
+      session.style.width = width + '%';
+      session.title = `Session: ${s.debut} - ${s.fin} (${s.dureeMin}min, ${s.actions} actions)`;
+      if (s.dureeMin > 10) {
+        session.textContent = s.actions + ' actions';
+      }
+      timeline.appendChild(session);
+    });
+
+    // Draw individual action dots
+    const dayActivities = dashboardData.engagements.filter(e => e.date === d.date);
+    const actionColors = {
+      'EMAIL': '#3b82f6',
+      'CALL': '#10b981',
+      'TASK': '#f59e0b',
+      'NOTE': '#a855f7'
+    };
+
+    dayActivities.forEach(activity => {
+      const actTime = activity.time; // format "HH:MM"
+      const [ah, am] = actTime.split(':').map(Number);
+      const actionMin = ah * 60 + am;
+      const left = (actionMin / (24 * 60)) * 100;
+
+      const dot = document.createElement('div');
+      dot.className = 'action-dot';
+      dot.style.left = left + '%';
+      dot.style.background = actionColors[activity.type] || '#6366f1';
+      dot.title = `${actTime} - ${activity.type}${activity.subject ? ': ' + activity.subject : ''}`;
+      timeline.appendChild(dot);
+    });
+
+    card.appendChild(timeline);
+
+    // Session details
+    const details = document.createElement('div');
+    details.className = 'session-details';
+    d.sessions.forEach((s, idx) => {
+      const box = document.createElement('div');
+      box.className = 'session-box';
+      box.innerHTML = `
+        <div class="session-box-title">Session ${idx + 1}: ${s.debut} → ${s.fin}</div>
+        <div class="session-box-info">⏱️ ${s.dureeMin}min | 📊 ${s.actions} actions</div>
+      `;
+      details.appendChild(box);
+    });
+    card.appendChild(details);
+
+    container.appendChild(card);
+  });
+}
+
+
     // Moved inside switchTab
     }
 </script>
