@@ -1,0 +1,46 @@
+name: Update Dashboard
+
+on:
+  # Exécution quotidienne à 17h30 (heure de Paris = 16h30 UTC en hiver, 15h30 UTC en été)
+  schedule:
+    - cron: '30 15 * * *'  # 17h30 heure de Paris (UTC+2 en été)
+
+  # Permet l'exécution manuelle
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install requests
+
+      - name: 🔄 Fetch HubSpot data
+        env:
+          HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+        run: |
+          python fetch_data.py
+
+      - name: 📤 Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🔄 Update dashboard data - $(date +'%d/%m/%Y %H:%M')" && git push)
+
+      - name: ✅ Done
+        run: |
+          echo "Dashboard mis à jour avec succès!"
+          echo "Timestamp: $(date)"

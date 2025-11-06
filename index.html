@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Raphaël Cheminaud | 13 Years</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0e1a;
+            --bg-card: #12172b;
+            --bg-card-hover: #1a2139;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --border-color: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Background gradient effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: rgba(18, 23, 43, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 30px 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.4em;
+            margin-bottom: 5px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-header .subtitle {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            padding: 30px 0;
+        }
+
+        .nav-item {
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+            transition: width 0.3s ease;
+            opacity: 0;
+        }
+
+        .nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item:hover::before {
+            width: 100%;
+            opacity: 1;
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-left-color: var(--accent-primary);
+            color: var(--text-primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .nav-item span {
+            z-index: 1;
+        }
+
+        .period-info {
+            padding: 20px 30px;
+            background: rgba(99, 102, 241, 0.1);
+            margin: 20px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            background: rgba(18, 23, 43, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 25px 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar h2 {
+            font-size: 1.8em;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .hubspot-link-top {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #ff7a59, #ff5c39);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 122, 89, 0.3);
+        }
+
+        .hubspot-link-top:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 122, 89, 0.5);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: rgba(18, 23, 43, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3), 0 0 60px rgba(99, 102, 241, 0.2);
+        }
+
+        .kpi-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .kpi-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .kpi-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            color: var(--accent-primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .kpi-number {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .kpi-label {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .kpi-subtext {
+            font-size: 0.85em;
+            margin-top: 12px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Chart Containers */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(18, 23, 43, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .chart-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-card h3 i {
+            color: var(--accent-primary);
+        }
+
+        /* Data Table */
+        .table-card {
+            background: rgba(18, 23, 43, 0.6);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Override DataTables styling for dark theme */
+        .dataTables_wrapper {
+            color: var(--text-primary);
+        }
+
+        table.dataTable {
+            background: transparent;
+            color: var(--text-primary);
+            border: none;
+        }
+
+        table.dataTable thead th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-primary);
+            font-weight: 600;
+            padding: 15px;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--accent-primary);
+        }
+
+        table.dataTable tbody tr {
+            background: transparent;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table.dataTable tbody tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        table.dataTable tbody td {
+            padding: 15px;
+            color: var(--text-primary);
+        }
+
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            background: rgba(18, 23, 43, 0.8);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: var(--text-primary) !important;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin: 0 2px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(99, 102, 241, 0.3) !important;
+            color: white !important;
+            border-color: var(--accent-primary);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--accent-primary) !important;
+            color: white !important;
+            border-color: var(--accent-primary);
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--text-secondary);
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-badge.email {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent-primary);
+            border: 1px solid var(--accent-primary);
+        }
+
+        .type-badge.call {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .type-badge.task {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .hubspot-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #ff7a59, #ff5c39);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 122, 89, 0.3);
+        }
+
+        .hubspot-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 122, 89, 0.5);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 26, 0.9);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: rgba(18, 23, 43, 0.95);
+            backdrop-filter: blur(30px);
+            margin: 5% auto;
+            padding: 0;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 100px rgba(99, 102, 241, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5em;
+            color: var(--text-primary);
+        }
+
+        .close {
+            font-size: 2em;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close:hover {
+            color: var(--text-primary);
+            background: rgba(239, 68, 68, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 40px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 10px;
+        }
+
+        .modal-field {
+            margin-bottom: 25px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 0.85em;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .modal-field .value {
+            color: var(--text-primary);
+            font-size: 1em;
+            line-height: 1.6;
+            padding: 15px;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .modal-recipients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .recipient-chip {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 1px solid var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        .hubspot-link-modal {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #ff7a59, #ff5c39);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 122, 89, 0.4);
+        }
+
+        .hubspot-link-modal:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(255, 122, 89, 0.6);
+        }
+
+        /* Tabs */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Chart click hint */
+        .chart-hint {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chart-hint i {
+            color: var(--accent-primary);
+        }
+    
+
+/* TIMELINE STYLES */
+.timeline-card {background:rgba(18,23,43,0.8);backdrop-filter:blur(20px);border-radius:12px;padding:20px;border:1px solid var(--border-color);margin-bottom:20px}
+.timeline-header {display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.timeline-header h4 {margin:0;font-size:16px}
+.timeline-info {font-size:13px;color:var(--text-secondary)}
+.hours-row {display:flex;gap:2px;font-size:10px;color:var(--text-secondary);margin-bottom:8px}
+.hours-row div {flex:1;text-align:center}
+.timeline {height:100px;background:rgba(30,41,59,0.5);border-radius:8px;position:relative;margin-bottom:16px}
+.session {position:absolute;top:8px;height:30px;border-radius:6px;background:rgba(16,185,129,0.3);border:2px solid var(--success);display:flex;align-items:center;justify-content:center;font-size:11px}
+.action-dot {position:absolute;top:50px;width:4px;height:42px;border-radius:2px;cursor:pointer;transition:all 0.2s}
+.action-dot:hover {height:52px;top:45px;width:6px;z-index:10}
+.session-details {display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.session-box {border:1px solid var(--border-color);border-radius:8px;padding:12px;font-size:13px;background:rgba(18,23,43,0.4)}
+.session-box-title {font-weight:600;margin-bottom:8px}
+.session-box-info {color:var(--text-secondary);font-size:12px}
+
+</style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>📊 Dashboard</h1>
+            <div class="subtitle">Raphaël Cheminaud - 13 Years</div>
+        </div>
+
+        <div class="nav-menu">
+            <div class="nav-item active" data-tab="overview">
+                <i class="fas fa-home"></i>
+                <span>Vue d'ensemble</span>
+            </div>
+            <div class="nav-item" data-tab="emails">
+                <i class="fas fa-envelope"></i>
+                <span>Emails</span>
+            </div>
+            <div class="nav-item" data-tab="calls">
+                <i class="fas fa-phone"></i>
+                <span>Appels</span>
+            </div>
+            <div class="nav-item" data-tab="timeline">
+                <i class="fas fa-clock"></i>
+                <span>Timeline</span>
+            </div>
+        </div>
+
+                <div class="nav-item" data-tab="timelines"><i class="fas fa-clock"></i><span>Timelines</span></div>
+<div class="period-info">
+            <i class="fas fa-calendar-alt"></i> <strong>Période</strong><br>
+            <span id="period-text">Chargement...</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active">
+            <div class="top-bar">
+                <h2>Vue d'ensemble</h2>
+                <a href="https://app-eu1.hubspot.com/contacts/146716340/record/0-1/442451012837" target="_blank" class="hubspot-link-top">
+                    <i class="fas fa-external-link-alt"></i> Ouvrir HubSpot
+                </a>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card" data-tab="timeline">
+                    <div class="kpi-content">
+                        <div class="kpi-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-number" id="kpi-total">0</div>
+                        <div class="kpi-label">Activités Totales</div>
+                        <div class="kpi-subtext">
+                            <i class="fas fa-arrow-up"></i> Depuis lundi dernier
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" data-tab="emails">
+                    <div class="kpi-content">
+                        <div class="kpi-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="kpi-number" id="kpi-emails">0</div>
+                        <div class="kpi-label">Emails Manuels</div>
+                        <div class="kpi-subtext" id="emails-per-day">
+                            <i class="fas fa-chart-bar"></i> 0/jour
+                        </div>
+                    </div>
+                </div>
+
+                <div class="kpi-card" data-tab="calls">
+                    <div class="kpi-content">
+                        <div class="kpi-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="kpi-number" id="kpi-calls">0</div>
+                        <div class="kpi-label">Appels</div>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-content">
+                        <div class="kpi-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="kpi-number" id="kpi-contacts">0</div>
+                        <div class="kpi-label">Contacts Touchés</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="chart-row">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Activités par Jour</h3>
+                    <canvas id="dailyChart"></canvas>
+                    <div class="chart-hint">
+                        <i class="fas fa-mouse-pointer"></i>
+                        Cliquez sur une barre pour filtrer la timeline
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-pie"></i> Répartition</h3>
+                    <canvas id="typeChart"></canvas>
+                    <div class="chart-hint">
+                        <i class="fas fa-mouse-pointer"></i>
+                        Cliquez pour voir les détails
+                    </div>
+                </div>
+            
+            <!-- Work Time Analysis -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3><i class="fas fa-business-time"></i> Temps de Travail Effectif</h3>
+                <canvas id="workTimeChart"></canvas>
+                <div class="chart-hint">
+                    <i class="fas fa-info-circle"></i>
+                    Seuil d'inactivité: 65 minutes · Basé sur les sessions d'activité continues
+                </div>
+            </div>
+</div>
+        </div>
+
+        <!-- Emails Tab -->
+        <div id="emails-tab" class="tab-content">
+            <div class="top-bar">
+                <h2><i class="fas fa-envelope"></i> Emails Manuels</h2>
+                <a href="https://app-eu1.hubspot.com/contacts/146716340/record/0-1/442451012837" target="_blank" class="hubspot-link-top">
+                    <i class="fas fa-external-link-alt"></i> Voir dans HubSpot
+                </a>
+            </div>
+
+            <div class="table-card">
+                <table id="emailsTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Date & Heure</th>
+                            <th>Sujet</th>
+                            <th>Destinataires</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emailsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Calls Tab -->
+        <div id="calls-tab" class="tab-content">
+            <div class="top-bar">
+                <h2><i class="fas fa-phone"></i> Appels Téléphoniques</h2>
+                <a href="https://app-eu1.hubspot.com/contacts/146716340/record/0-1/442451012837" target="_blank" class="hubspot-link-top">
+                    <i class="fas fa-external-link-alt"></i> Voir dans HubSpot
+                </a>
+            </div>
+
+            <div class="table-card">
+                <table id="callsTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Date & Heure</th>
+                            <th>Titre</th>
+                            <th>Notes</th>
+                            <th>Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="callsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="timeline-tab" class="tab-content">
+            <div class="top-bar">
+                <h2><i class="fas fa-clock"></i> Timeline Complète</h2>
+                <a href="https://app-eu1.hubspot.com/contacts/146716340/record/0-1/442451012837" target="_blank" class="hubspot-link-top">
+                    <i class="fas fa-external-link-alt"></i> Voir dans HubSpot
+                </a>
+            </div>
+
+            <div class="table-card">
+                <table id="timelineTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Date & Heure</th>
+                            <th>Type</th>
+                            <th>Titre / Sujet</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timelineTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="activityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Détails de l'activité</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global data
+        let dashboardData = null;
+
+// Charger les données depuis data.json
+fetch('data.json')
+    .then(response => response.json())
+    .then(data => {
+        dashboardData = data;
+        console.log('✅ Données chargées:', data.stats);
+        // Initialiser le dashboard après le chargement
+        if (typeof initDashboard === 'function') {
+            initDashboard();
+        }
+    })
+    .catch(error => {
+        console.error('❌ Erreur chargement données:', error);
+        document.body.innerHTML = '<div style="padding:40px;text-align:center;font-family:sans-serif;"><h1>❌ Erreur</h1><p>Impossible de charger les données du dashboard.</p></div>';
+    });
+        let charts = {};
+        let dataTables = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboard();
+            initNavigation();
+        });
+
+        // Initialize navigation
+        function initNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            document.querySelectorAll('.kpi-card[data-tab]').forEach(card => {
+                card.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+
+            document.querySelector('.close').addEventListener('click', closeModal);
+
+            window.onclick = function(event) {
+                const modal = document.getElementById('activityModal');
+                if (event.target == modal) {
+                    closeModal();
+                }
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            const navItem = document.querySelector(`.nav-item[data-tab="${tabName}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            updateKPIs();
+            updatePeriodText();
+            createCharts();
+            populateTables();
+        }
+
+        // Update KPIs
+        function updateKPIs() {
+            const stats = dashboardData.stats;
+            document.getElementById('kpi-total').textContent = stats.total;
+            document.getElementById('kpi-emails').textContent = stats.emails;
+            document.getElementById('kpi-calls').textContent = stats.calls;
+            document.getElementById('kpi-contacts').textContent = stats.contacts;
+            document.getElementById('emails-per-day').innerHTML =
+                `<i class="fas fa-chart-bar"></i> ${Math.round(stats.emails / stats.days)}/jour`;
+        }
+
+        // Update period text
+        function updatePeriodText() {
+            const stats = dashboardData.stats;
+            document.getElementById('period-text').textContent =
+                `Du ${stats.period_start} au ${stats.period_end}`;
+        }
+
+        // Create charts
+        function createCharts() {
+            // Daily activity chart (clickable)
+            const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+            charts.daily = new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: dashboardData.daily_activity.map(d => d.label),
+                    datasets: [{
+                        label: 'Emails',
+                        data: dashboardData.daily_activity.map(d => d.emails),
+                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: 'rgba(99, 102, 241, 1)'
+                    }, {
+                        label: 'Appels',
+                        data: dashboardData.daily_activity.map(d => d.calls),
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: 'rgba(16, 185, 129, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const date = dashboardData.daily_activity[index].date;
+                            filterTimelineByDate(date);
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: { size: 12 }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 23, 43, 0.95)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+    
+            // Work time chart
+            const workCtx = document.getElementById('workTimeChart');
+            if (workCtx && dashboardData.work_analysis) {
+                const workChart = new Chart(workCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: dashboardData.work_analysis.map(d => {
+                            const date = new Date(d.date);
+                            return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+                        }),
+                        datasets: [{
+                            label: 'Heures travaillées',
+                            data: dashboardData.work_analysis.map(d => d.dureeEffective),
+                            backgroundColor: 'rgba(139, 92, 246, 0.8)',
+                            borderColor: 'rgba(139, 92, 246, 1)',
+                            borderWidth: 2,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(18, 23, 43, 0.95)',
+                                titleColor: '#e2e8f0',
+                                bodyColor: '#e2e8f0',
+                                borderColor: '#a855f7',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        const day = dashboardData.work_analysis[context.dataIndex];
+                                        return [
+                                            `Temps: ${day.dureeEffective}h`,
+                                            `Actions: ${day.nombreActions}`,
+                                            `Sessions: ${day.nombreSessions}`,
+                                            `Début: ${day.premierAction}`,
+                                            `Fin: ${day.derniereAction}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#94a3b8',
+                                    callback: function(value) {
+                                        return value + 'h';
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Heures de travail',
+                                    color: '#94a3b8'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#94a3b8'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+
+                charts.work = workChart;
+            }
+
+
+                    // Type distribution chart (clickable)
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            charts.type = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Emails', 'Appels', 'Tâches'],
+                    datasets: [{
+                        data: [
+                            dashboardData.stats.emails,
+                            dashboardData.stats.calls,
+                            dashboardData.stats.tasks
+                        ],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)'
+                        ],
+                        borderWidth: 3,
+                        borderColor: '#12172b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const types = ['emails', 'calls', 'timeline'];
+                            switchTab(types[index] || 'timeline');
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: { size: 12 },
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(18, 23, 43, 0.95)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#e2e8f0',
+                            borderColor: '#6366f1',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter timeline by date
+        function filterTimelineByDate(date) {
+            switchTab('timeline');
+            setTimeout(() => {
+                if (dataTables.timeline) {
+                    // Convertir YYYY-MM-DD en DD/MM/YYYY pour matcher le format du tableau
+                    const parts = date.split('-');
+                    const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    dataTables.timeline.search(formattedDate).draw();
+                }
+            }, 300);
+        }
+
+        // Populate tables
+        function populateTables() {
+            populateEmailsTable();
+            populateCallsTable();
+            populateTimelineTable();
+        }
+
+        function populateEmailsTable() {
+            const tbody = document.getElementById('emailsTableBody');
+            const emails = dashboardData.engagements.filter(e => e.type === 'EMAIL');
+
+            emails.forEach(email => {
+                const recipients = email.to ? email.to.slice(0, 2).map(r => r.name).join(', ') : '';
+                const moreRecipients = email.to && email.to.length > 2 ? ` +${email.to.length - 2}` : '';
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${email.datetime}</td>
+                    <td>${email.subject || 'Sans sujet'}</td>
+                    <td>${recipients}${moreRecipients}</td>
+                    <td>
+                        <button class="view-btn" onclick='showActivityDetails(${JSON.stringify(email).replace(/'/g, "&#39;")})'><i class="fas fa-eye"></i></button>
+                        <a href="${email.url}" target="_blank" class="hubspot-btn"><i class="fab fa-hubspot"></i></a>
+                    </td>
+                `;
+            });
+
+            dataTables.emails = $('#emailsTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
+                }
+            });
+        }
+
+        function populateCallsTable() {
+            const tbody = document.getElementById('callsTableBody');
+            const calls = dashboardData.engagements.filter(e => e.type === 'CALL');
+
+            calls.forEach(call => {
+                const duration = call.duration ? Math.floor(call.duration / 1000 / 60) + ' min' : 'N/A';
+                const notes = call.body ? (call.body.substring(0, 50) + '...') : 'Aucune note';
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${call.datetime}</td>
+                    <td>${call.title || 'Appel'}</td>
+                    <td>${notes}</td>
+                    <td>${duration}</td>
+                    <td>
+                        <button class="view-btn" onclick='showActivityDetails(${JSON.stringify(call).replace(/'/g, "&#39;")})'><i class="fas fa-eye"></i></button>
+                        <a href="${call.url}" target="_blank" class="hubspot-btn"><i class="fab fa-hubspot"></i></a>
+                    </td>
+                `;
+            });
+
+            dataTables.calls = $('#callsTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
+                }
+            });
+        }
+
+        function populateTimelineTable() {
+            const tbody = document.getElementById('timelineTableBody');
+
+            dashboardData.engagements.forEach(activity => {
+                const title = activity.subject || activity.title || (activity.body ? activity.body.substring(0, 50) + '...' : 'Activité');
+                const badgeClass = activity.type.toLowerCase();
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${activity.datetime}</td>
+                    <td><span class="type-badge ${badgeClass}">${activity.type}</span></td>
+                    <td>${title}</td>
+                    <td>
+                        <button class="view-btn" onclick='showActivityDetails(${JSON.stringify(activity).replace(/'/g, "&#39;")})'><i class="fas fa-eye"></i></button>
+                        <a href="${activity.url}" target="_blank" class="hubspot-btn"><i class="fab fa-hubspot"></i></a>
+                    </td>
+                `;
+            });
+
+            dataTables.timeline = $('#timelineTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 25,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json'
+                }
+            });
+        }
+
+        // Show activity details in modal
+        function showActivityDetails(activity) {
+            const modal = document.getElementById('activityModal');
+            const modalBody = document.getElementById('modalBody');
+            const modalTitle = document.getElementById('modalTitle');
+
+            modalTitle.innerHTML = `<span class="type-badge ${activity.type.toLowerCase()}">${activity.type}</span> ${activity.datetime}`;
+
+            let content = '';
+
+            if (activity.type === 'EMAIL') {
+                const recipients = activity.to ? activity.to.map(r =>
+                    `<div class="recipient-chip">${r.name}</div>`
+                ).join('') : '';
+
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-heading"></i> Sujet</label>
+                        <div class="value">${activity.subject || 'Sans sujet'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-user"></i> Destinataires</label>
+                        <div class="modal-recipients">${recipients}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-file-alt"></i> Aperçu</label>
+                        <div class="value">${activity.preview || 'Pas d\'aperçu disponible'}</div>
+                    </div>
+                `;
+            } else if (activity.type === 'CALL') {
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-heading"></i> Titre</label>
+                        <div class="value">${activity.title || 'Appel'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-sticky-note"></i> Notes</label>
+                        <div class="value">${activity.body || 'Pas de notes'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-clock"></i> Durée</label>
+                        <div class="value">${activity.duration ? Math.floor(activity.duration / 1000 / 60) + ' minutes' : 'N/A'}</div>
+                    </div>
+                `;
+            } else if (activity.type === 'TASK') {
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-heading"></i> Sujet</label>
+                        <div class="value">${activity.subject || 'Tâche'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-file-alt"></i> Description</label>
+                        <div class="value">${activity.body || 'Pas de description'}</div>
+                    </div>
+                `;
+            }
+
+            content += `
+                <a href="${activity.url}" target="_blank" class="hubspot-link-modal">
+                    <i class="fab fa-hubspot"></i> Ouvrir dans HubSpot
+                </a>
+            `;
+
+            modalBody.innerHTML = content;
+            modal.style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('activityModal').style.display = 'none';
+        }
+    
+function initTimelines(){if(!dashboardData||!dashboardData.work_analysis)return;const w=dashboardData.work_analysis;drawWorkSVG(w);drawTimelines(w)}
+function drawWorkSVG(d){const s=document.getElementById('chart-work');if(!s)return;s.innerHTML='';const p=40,w=1000,h=220,iw=w-2*p,ih=h-2*p,max=Math.max(...d.map(x=>x.dureeEffective),6),bw=iw/d.length*0.7;d.forEach((v,i)=>{const x=p+i*(iw/d.length)+((iw/d.length)-bw)/2,bh=(v.dureeEffective/max)*ih,y=p+(ih-bh);const r=document.createElementNS('http://www.w3.org/2000/svg','rect');r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',bw);r.setAttribute('height',bh);r.setAttribute('rx',6);r.setAttribute('fill','#a855f7');r.setAttribute('opacity','0.8');s.appendChild(r);const l=document.createElementNS('http://www.w3.org/2000/svg','text');l.setAttribute('x',x+bw/2);l.setAttribute('y',p+ih+16);l.setAttribute('font-size',11);l.setAttribute('text-anchor','middle');l.setAttribute('fill','#94a3b8');l.textContent=new Date(v.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});s.appendChild(l);const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',x+bw/2);t.setAttribute('y',y-6);t.setAttribute('font-size',11);t.setAttribute('text-anchor','middle');t.setAttribute('fill','#a855f7');t.textContent=v.dureeEffective.toFixed(2)+'h';s.appendChild(t)})}
+function drawTimelines(d){const c=document.getElementById('timeline-container');if(!c)return;c.innerHTML='';d.forEach(v=>{const cd=document.createElement('div');cd.className='timeline-card';const dt=new Date(v.date);const ds=dt.toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});const dc=ds.charAt(0).toUpperCase()+ds.slice(1);const hd=document.createElement('div');hd.className='timeline-header';hd.innerHTML=`<h4>${dc}</h4><div class="timeline-info">${v.nombreActions} actions | ${v.nombreSessions} sessions | <span style="color:var(--success);font-weight:600">${v.dureeEffective.toFixed(2)}h</span></div>`;cd.appendChild(hd);const hr=document.createElement('div');hr.className='hours-row';for(let i=0;i<24;i++){const h=document.createElement('div');h.textContent=i+'h';hr.appendChild(h)}cd.appendChild(hr);const tl=document.createElement('div');tl.className='timeline';v.sessions.forEach(s=>{const[sh,sm]=s.debut.split(':').map(Number);const st=sh*60+sm;const wd=Math.max((s.dureeMin/(24*60))*100,0.5);const lt=(st/(24*60))*100;const ss=document.createElement('div');ss.className='session';ss.style.left=lt+'%';ss.style.width=wd+'%';ss.title=`${s.debut}-${s.fin} (${s.dureeMin}min)`;if(s.dureeMin>10)ss.textContent=s.actions+' act.';tl.appendChild(ss)});const da=dashboardData.engagements.filter(e=>e.date===v.date);const ac={'EMAIL':'#3b82f6','CALL':'#10b981','TASK':'#f59e0b'};da.forEach(a=>{const[ah,am]=a.time.split(':').map(Number);const am2=ah*60+am;const lt=(am2/(24*60))*100;const dt2=document.createElement('div');dt2.className='action-dot';dt2.style.left=lt+'%';dt2.style.background=ac[a.type]||'#6366f1';dt2.title=`${a.time}-${a.type}`;tl.appendChild(dt2)});cd.appendChild(tl);const sd=document.createElement('div');sd.className='session-details';v.sessions.forEach((s,i)=>{const bx=document.createElement('div');bx.className='session-box';bx.innerHTML=`<div class="session-box-title">Session ${i+1}: ${s.debut} → ${s.fin}</div><div class="session-box-info">${s.dureeMin}min | ${s.actions} actions</div>`;sd.appendChild(bx)});cd.appendChild(sd);c.appendChild(cd)})
+    if(tabName==='timelines')setTimeout(initTimelines,100);
+    }
+</script>
+
+<div class="tab-content" id="timelines-tab" style="display:none">
+  <h2 style="margin-bottom:30px;font-size:1.8em"><i class="fas fa-clock"></i> Timelines Détaillées</h2>
+  <div class="card" style="margin-bottom:30px">
+    <h3 style="margin-bottom:20px">Temps de Travail Effectif</h3>
+    <svg id="chart-work" style="width:100%;height:220px" viewBox="0 0 1000 220"></svg>
+    <p style="margin-top:15px;font-size:0.9em;color:var(--text-secondary)"><i class="fas fa-info-circle"></i> Seuil: 65min</p>
+  </div>
+  <div id="timeline-container"></div>
+</div>
+
+<div style="text-align:center; padding:20px; color:var(--text-secondary); font-size:0.9em; border-top:1px solid var(--border-color); margin-top:40px;">
+    <p>📊 Dashboard mis à jour automatiquement tous les jours à 17h30</p>
+    <p id="last-update"></p>
+</div>
+<script>
+// Afficher la date de dernière mise à jour
+fetch('data.json')
+    .then(r => r.json())
+    .then(data => {
+        if (data.stats && data.stats.period_end) {
+            document.getElementById('last-update').textContent = 
+                '🕐 Dernière mise à jour: ' + new Date().toLocaleString('fr-FR');
+        }
+    });
+</script>
+</body>
+</html>
