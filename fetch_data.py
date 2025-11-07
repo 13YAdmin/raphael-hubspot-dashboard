@@ -14,7 +14,7 @@ from collections import defaultdict
 HUBSPOT_TOKEN = os.environ.get('HUBSPOT_TOKEN')
 PORTAL_ID = "146716340"
 RAPHAEL_CONTACT_ID = "442451012837"
-RAPHAEL_OWNER_ID = "1135482969"  # Owner ID de Raphaël dans HubSpot
+RAPHAEL_OWNER_ID = "29926733"  # Owner ID de Raphaël dans HubSpot
 COMPANY_13_YEARS_ID = "234376298682"
 BASE_URL = "https://api.hubapi.com"
 SESSION_GAP_MINUTES = 65
@@ -64,18 +64,9 @@ def fetch_engagements():
 
             # Vérifier que c'est bien un engagement créé PAR Raphaël (owner)
             owner_id = engagement.get('ownerId')
-            associations = eng.get('associations', {})
-            contact_ids = associations.get('contactIds', [])
 
-            # LOG: Afficher les premiers owner IDs trouvés
-            if len(all_engagements) < 5:
-                print(f"  🔍 {eng_type} du {dt.strftime('%d/%m/%Y')} - ownerID: {owner_id}, contacts: {contact_ids[:2]}")
-
-            # Filtrer: soit par owner ID, soit si Raphaël est dans les contacts associés
-            is_raphael_owner = str(owner_id) == str(RAPHAEL_OWNER_ID)
-            is_raphael_contact = RAPHAEL_CONTACT_ID in [str(cid) for cid in contact_ids]
-
-            if is_raphael_owner or is_raphael_contact:
+            # Filtrer par owner ID de Raphaël (tous les engagements créés PAR lui)
+            if str(owner_id) == str(RAPHAEL_OWNER_ID):
                 # Exclure les emails de séquence
                 if eng_type == 'EMAIL':
                     metadata = eng.get('metadata', {})
