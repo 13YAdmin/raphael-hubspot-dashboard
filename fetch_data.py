@@ -64,9 +64,18 @@ def fetch_engagements():
 
             # Vérifier que c'est bien un engagement créé PAR Raphaël (owner)
             owner_id = engagement.get('ownerId')
+            associations = eng.get('associations', {})
+            contact_ids = associations.get('contactIds', [])
 
-            # Filtrer par owner ID de Raphaël
-            if str(owner_id) == str(RAPHAEL_OWNER_ID):
+            # LOG: Afficher les premiers owner IDs trouvés
+            if len(all_engagements) < 5:
+                print(f"  🔍 {eng_type} du {dt.strftime('%d/%m/%Y')} - ownerID: {owner_id}, contacts: {contact_ids[:2]}")
+
+            # Filtrer: soit par owner ID, soit si Raphaël est dans les contacts associés
+            is_raphael_owner = str(owner_id) == str(RAPHAEL_OWNER_ID)
+            is_raphael_contact = RAPHAEL_CONTACT_ID in [str(cid) for cid in contact_ids]
+
+            if is_raphael_owner or is_raphael_contact:
                 # Exclure les emails de séquence
                 if eng_type == 'EMAIL':
                     metadata = eng.get('metadata', {})
