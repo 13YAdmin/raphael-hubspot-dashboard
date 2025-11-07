@@ -79,8 +79,8 @@ python -m http.server 8000
 
 ### Calcul du temps de travail
 
-- **Seuil d'inactivité** : 65 minutes
-- Si 2 actions sont espacées de plus de 65 minutes, elles appartiennent à des sessions différentes
+- **Seuil d'inactivité** : 30 minutes
+- Si 2 actions sont espacées de plus de 30 minutes, elles appartiennent à des sessions différentes
 - Le temps effectif = somme des durées de toutes les sessions
 
 ### Période couverte

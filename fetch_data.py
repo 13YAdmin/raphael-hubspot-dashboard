@@ -18,7 +18,7 @@ RAPHAEL_OWNER_ID = "29926733"  # Owner ID de Raphaël dans HubSpot (tasks, meeti
 RAPHAEL_OWNER_ID_CALLS = "29974224"  # Owner ID de Raphaël pour les appels
 COMPANY_13_YEARS_ID = "234376298682"
 BASE_URL = "https://api.hubapi.com"
-SESSION_GAP_MINUTES = 65
+SESSION_GAP_MINUTES = 30
 
 def fetch_engagements():
     """Récupère tous les engagements de Raphaël depuis le début de la période."""
@@ -184,7 +184,7 @@ def format_engagements(engagements):
     return formatted
 
 def calculate_work_sessions(engagements):
-    """Calcule les sessions de travail avec un seuil de 65 minutes."""
+    """Calcule les sessions de travail avec un seuil de 30 minutes."""
     # Grouper par date
     by_date = defaultdict(list)
     for eng in engagements:
