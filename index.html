@@ -769,23 +769,23 @@
                     </div>
                 </div>
 
-                <div class="kpi-card" data-tab="timeline">
+                <div class="kpi-card" data-tab="calls">
                     <div class="kpi-content">
                         <div class="kpi-icon">
-                            <i class="fas fa-tasks"></i>
+                            <i class="fas fa-phone"></i>
                         </div>
-                        <div class="kpi-number" id="kpi-tasks">0</div>
-                        <div class="kpi-label">Tâches</div>
+                        <div class="kpi-number" id="kpi-calls">0</div>
+                        <div class="kpi-label">Appels</div>
                     </div>
                 </div>
 
                 <div class="kpi-card" data-tab="timeline">
                     <div class="kpi-content">
                         <div class="kpi-icon">
-                            <i class="fas fa-handshake"></i>
+                            <i class="fas fa-sticky-note"></i>
                         </div>
-                        <div class="kpi-number" id="kpi-meetings">0</div>
-                        <div class="kpi-label">Réunions</div>
+                        <div class="kpi-number" id="kpi-notes">0</div>
+                        <div class="kpi-label">Notes</div>
                     </div>
                 </div>
             </div>
@@ -1025,8 +1025,8 @@ if (document.readyState === 'loading') {
             const stats = dashboardData.stats;
             document.getElementById('kpi-total').textContent = stats.total;
             document.getElementById('kpi-emails').textContent = stats.emails;
-            document.getElementById('kpi-tasks').textContent = stats.tasks || 0;
-            document.getElementById('kpi-meetings').textContent = stats.meetings || 0;
+            document.getElementById('kpi-calls').textContent = stats.calls || 0;
+            document.getElementById('kpi-notes').textContent = stats.notes || 0;
             document.getElementById('emails-per-day').innerHTML =
                 `<i class="fas fa-chart-bar"></i> ${Math.round(stats.emails / stats.days)}/jour`;
         }
