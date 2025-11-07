@@ -431,6 +431,12 @@
             border: 1px solid var(--accent-primary);
         }
 
+        .type-badge.incoming_email {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+
         .type-badge.call {
             background: rgba(16, 185, 129, 0.2);
             color: var(--success);
@@ -441,6 +447,18 @@
             background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
             border: 1px solid var(--warning);
+        }
+
+        .type-badge.meeting {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-secondary);
+            border: 1px solid var(--accent-secondary);
+        }
+
+        .type-badge.note {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+            border: 1px solid #ec4899;
         }
 
         .view-btn {
@@ -751,23 +769,23 @@
                     </div>
                 </div>
 
-                <div class="kpi-card" data-tab="calls">
+                <div class="kpi-card" data-tab="timeline">
                     <div class="kpi-content">
                         <div class="kpi-icon">
-                            <i class="fas fa-phone"></i>
+                            <i class="fas fa-tasks"></i>
                         </div>
-                        <div class="kpi-number" id="kpi-calls">0</div>
-                        <div class="kpi-label">Appels</div>
+                        <div class="kpi-number" id="kpi-tasks">0</div>
+                        <div class="kpi-label">Tâches</div>
                     </div>
                 </div>
 
-                <div class="kpi-card">
+                <div class="kpi-card" data-tab="timeline">
                     <div class="kpi-content">
                         <div class="kpi-icon">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-handshake"></i>
                         </div>
-                        <div class="kpi-number" id="kpi-contacts">0</div>
-                        <div class="kpi-label">Contacts Touchés</div>
+                        <div class="kpi-number" id="kpi-meetings">0</div>
+                        <div class="kpi-label">Réunions</div>
                     </div>
                 </div>
             </div>
@@ -1007,8 +1025,8 @@ if (document.readyState === 'loading') {
             const stats = dashboardData.stats;
             document.getElementById('kpi-total').textContent = stats.total;
             document.getElementById('kpi-emails').textContent = stats.emails;
-            document.getElementById('kpi-calls').textContent = stats.calls;
-            document.getElementById('kpi-contacts').textContent = stats.contacts;
+            document.getElementById('kpi-tasks').textContent = stats.tasks || 0;
+            document.getElementById('kpi-meetings').textContent = stats.meetings || 0;
             document.getElementById('emails-per-day').innerHTML =
                 `<i class="fas fa-chart-bar"></i> ${Math.round(stats.emails / stats.days)}/jour`;
         }
@@ -1024,6 +1042,22 @@ if (document.readyState === 'loading') {
         function createCharts() {
             // Daily activity chart (clickable)
             const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+
+            // Calculer les tasks et meetings par jour
+            const dailyTasks = {};
+            const dailyMeetings = {};
+            const dailyNotes = {};
+            dashboardData.engagements.forEach(e => {
+                if (!dailyTasks[e.date]) {
+                    dailyTasks[e.date] = 0;
+                    dailyMeetings[e.date] = 0;
+                    dailyNotes[e.date] = 0;
+                }
+                if (e.type === 'TASK') dailyTasks[e.date]++;
+                if (e.type === 'MEETING') dailyMeetings[e.date]++;
+                if (e.type === 'NOTE') dailyNotes[e.date]++;
+            });
+
             charts.daily = new Chart(dailyCtx, {
                 type: 'bar',
                 data: {
@@ -1035,6 +1069,20 @@ if (document.readyState === 'loading') {
                         borderRadius: 8,
                         borderWidth: 2,
                         borderColor: 'rgba(99, 102, 241, 1)'
+                    }, {
+                        label: 'Tâches',
+                        data: dashboardData.daily_activity.map(d => dailyTasks[d.date] || 0),
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: 'rgba(245, 158, 11, 1)'
+                    }, {
+                        label: 'Réunions',
+                        data: dashboardData.daily_activity.map(d => dailyMeetings[d.date] || 0),
+                        backgroundColor: 'rgba(139, 92, 246, 0.8)',
+                        borderRadius: 8,
+                        borderWidth: 2,
+                        borderColor: 'rgba(139, 92, 246, 1)'
                     }, {
                         label: 'Appels',
                         data: dashboardData.daily_activity.map(d => d.calls),
@@ -1180,21 +1228,37 @@ if (document.readyState === 'loading') {
 
                     // Type distribution chart (clickable)
             const typeCtx = document.getElementById('typeChart').getContext('2d');
+
+            // Préparer les données pour tous les types
+            const typeLabels = [];
+            const typeData = [];
+            const typeColors = [];
+            const typeMap = {
+                'EMAIL': { label: 'Emails', color: 'rgba(99, 102, 241, 0.8)' },
+                'TASK': { label: 'Tâches', color: 'rgba(245, 158, 11, 0.8)' },
+                'MEETING': { label: 'Réunions', color: 'rgba(139, 92, 246, 0.8)' },
+                'CALL': { label: 'Appels', color: 'rgba(16, 185, 129, 0.8)' },
+                'NOTE': { label: 'Notes', color: 'rgba(236, 72, 153, 0.8)' },
+                'INCOMING_EMAIL': { label: 'Emails entrants', color: 'rgba(59, 130, 246, 0.8)' }
+            };
+
+            Object.keys(dashboardData.stats.by_type || {}).forEach(type => {
+                const count = dashboardData.stats.by_type[type];
+                if (count > 0) {
+                    const typeInfo = typeMap[type] || { label: type, color: 'rgba(148, 163, 184, 0.8)' };
+                    typeLabels.push(typeInfo.label);
+                    typeData.push(count);
+                    typeColors.push(typeInfo.color);
+                }
+            });
+
             charts.type = new Chart(typeCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Emails', 'Appels', 'Tâches'],
+                    labels: typeLabels,
                     datasets: [{
-                        data: [
-                            dashboardData.stats.emails,
-                            dashboardData.stats.calls,
-                            dashboardData.stats.tasks
-                        ],
-                        backgroundColor: [
-                            'rgba(99, 102, 241, 0.8)',
-                            'rgba(16, 185, 129, 0.8)',
-                            'rgba(245, 158, 11, 0.8)'
-                        ],
+                        data: typeData,
+                        backgroundColor: typeColors,
                         borderWidth: 3,
                         borderColor: '#12172b'
                     }]
@@ -1392,6 +1456,74 @@ if (document.readyState === 'loading') {
                         <label><i class="fas fa-file-alt"></i> Description</label>
                         <div class="value">${activity.body || 'Pas de description'}</div>
                     </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-info-circle"></i> Statut</label>
+                        <div class="value">${activity.status || 'Non défini'}</div>
+                    </div>
+                `;
+            } else if (activity.type === 'MEETING') {
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-heading"></i> Titre</label>
+                        <div class="value">${activity.title || 'Réunion'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-sticky-note"></i> Description</label>
+                        <div class="value">${activity.body || 'Pas de description'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-clock"></i> Horaire</label>
+                        <div class="value">
+                            ${activity.startTime ? new Date(activity.startTime).toLocaleString('fr-FR') : 'Non défini'}
+                            ${activity.endTime ? ' - ' + new Date(activity.endTime).toLocaleString('fr-FR') : ''}
+                        </div>
+                    </div>
+                    ${activity.location ? `
+                    <div class="modal-field">
+                        <label><i class="fas fa-map-marker-alt"></i> Lieu</label>
+                        <div class="value">${activity.location}</div>
+                    </div>
+                    ` : ''}
+                `;
+            } else if (activity.type === 'NOTE') {
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-sticky-note"></i> Contenu</label>
+                        <div class="value">${activity.body || activity.preview || 'Pas de contenu'}</div>
+                    </div>
+                `;
+            } else if (activity.type === 'INCOMING_EMAIL') {
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-heading"></i> Sujet</label>
+                        <div class="value">${activity.subject || 'Sans sujet'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-user"></i> De</label>
+                        <div class="value">${activity.from || 'Non défini'}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-file-alt"></i> Aperçu</label>
+                        <div class="value">${activity.preview || 'Pas d\'aperçu disponible'}</div>
+                    </div>
+                `;
+            } else {
+                // Type générique
+                content = `
+                    <div class="modal-field">
+                        <label><i class="fas fa-info-circle"></i> Type</label>
+                        <div class="value">${activity.type}</div>
+                    </div>
+                    <div class="modal-field">
+                        <label><i class="fas fa-heading"></i> Titre/Sujet</label>
+                        <div class="value">${activity.subject || activity.title || 'Non défini'}</div>
+                    </div>
+                    ${activity.body ? `
+                    <div class="modal-field">
+                        <label><i class="fas fa-file-alt"></i> Description</label>
+                        <div class="value">${activity.body}</div>
+                    </div>
+                    ` : ''}
                 `;
             }
 
