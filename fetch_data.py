@@ -34,6 +34,7 @@ def fetch_engagements():
     start_timestamp = int(monday.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000)
 
     all_engagements = []
+    sequence_emails_excluded = 0
     offset = 0
     has_more = True
 
@@ -54,6 +55,8 @@ def fetch_engagements():
         for eng in data.get('results', []):
             engagement = eng.get('engagement', {})
             timestamp = engagement.get('timestamp', 0)
+            eng_type = engagement.get('type')
+            dt = datetime.fromtimestamp(timestamp / 1000)
 
             if timestamp < start_timestamp:
                 continue
@@ -66,9 +69,10 @@ def fetch_engagements():
             contact_ids = associations.get('contactIds', [])
             if RAPHAEL_CONTACT_ID in [str(cid) for cid in contact_ids]:
                 # Exclure les emails de séquence
-                if engagement.get('type') == 'EMAIL':
+                if eng_type == 'EMAIL':
                     metadata = eng.get('metadata', {})
                     if metadata.get('sequenceId'):
+                        sequence_emails_excluded += 1
                         continue
 
                 all_engagements.append(eng)
@@ -80,6 +84,8 @@ def fetch_engagements():
             print(f"  ⏳ Récupéré {len(all_engagements)} engagements, continuation...")
 
     print(f"✅ Total récupéré : {len(all_engagements)} engagements")
+    if sequence_emails_excluded > 0:
+        print(f"📧 Emails de séquence exclus : {sequence_emails_excluded}")
     return all_engagements
 
 def format_engagements(engagements):
