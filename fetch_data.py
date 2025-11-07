@@ -37,9 +37,6 @@ def fetch_engagements():
 
     all_engagements = []
     sequence_emails_excluded = 0
-    calls_found = 0
-    calls_excluded = 0
-    all_types = {}
     offset = 0
     has_more = True
 
@@ -63,10 +60,6 @@ def fetch_engagements():
             eng_type = engagement.get('type')
             dt = datetime.fromtimestamp(timestamp / 1000)
 
-            # Compter tous les types pour statistiques
-            if timestamp >= start_timestamp:
-                all_types[eng_type] = all_types.get(eng_type, 0) + 1
-
             if timestamp < start_timestamp:
                 continue
 
@@ -74,16 +67,9 @@ def fetch_engagements():
             owner_id = engagement.get('ownerId')
             associations = eng.get('associations', {})
             contact_ids = associations.get('contactIds', [])
-
-            # Logger les appels pour debug
-            if eng_type == 'CALL':
-                calls_found += 1
-                metadata = eng.get('metadata', {})
-                company_ids = associations.get('companyIds', [])
-                print(f"  📞 CALL: owner={owner_id}, contacts={contact_ids[:2]}, companies={company_ids[:2]}, from={metadata.get('fromNumber', 'N/A')}, to={metadata.get('toNumber', 'N/A')}")
-
-            # Filtrer: owner ID de Raphaël OU Raphaël dans les contacts OU company 13 Years
             company_ids = associations.get('companyIds', [])
+
+            # Filtrer: owner ID de Raphaël (2 IDs) OU Raphaël dans les contacts OU company 13 Years
             is_raphael_owner = str(owner_id) in [str(RAPHAEL_OWNER_ID), str(RAPHAEL_OWNER_ID_CALLS)]
             is_raphael_in_contacts = RAPHAEL_CONTACT_ID in [str(cid) for cid in contact_ids]
             is_13years_company = COMPANY_13_YEARS_ID in [str(cid) for cid in company_ids]
@@ -97,9 +83,6 @@ def fetch_engagements():
                         continue
 
                 all_engagements.append(eng)
-            elif eng_type == 'CALL':
-                calls_excluded += 1
-                print(f"    ❌ CALL exclu: owner={owner_id} (attendu: {RAPHAEL_OWNER_ID} ou {RAPHAEL_OWNER_ID_CALLS}), contact {RAPHAEL_CONTACT_ID} absent, company {COMPANY_13_YEARS_ID} absent")
 
         has_more = data.get('hasMore', False)
         offset = data.get('offset', 0)
@@ -110,12 +93,6 @@ def fetch_engagements():
     print(f"✅ Total récupéré : {len(all_engagements)} engagements")
     if sequence_emails_excluded > 0:
         print(f"📧 Emails de séquence exclus : {sequence_emails_excluded}")
-
-    print(f"\n🔍 TOUS les types d'engagements trouvés dans la période (avant filtre):")
-    for eng_type, count in sorted(all_types.items()):
-        print(f"  • {eng_type}: {count}")
-
-    print(f"\n📞 Appels (CALL) trouvés: {calls_found}, dont {calls_excluded} exclus par le filtre owner/contact")
     return all_engagements
 
 def format_engagements(engagements):
