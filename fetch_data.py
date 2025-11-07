@@ -120,10 +120,12 @@ def format_engagements(engagements):
             'url': url
         }
 
+        # Détails selon le type
         if eng_type == 'EMAIL':
             formatted_eng.update({
                 'subject': metadata.get('subject', ''),
                 'to': metadata.get('to', []),
+                'from': metadata.get('from', {}).get('email', ''),
                 'preview': metadata.get('text', '')[:200],
                 'status': metadata.get('status', '')
             })
@@ -132,13 +134,38 @@ def format_engagements(engagements):
                 'title': metadata.get('title', ''),
                 'body': metadata.get('body', ''),
                 'status': metadata.get('status', ''),
-                'duration': metadata.get('durationMilliseconds', 0)
+                'duration': metadata.get('durationMilliseconds', 0),
+                'disposition': metadata.get('disposition', ''),
+                'toNumber': metadata.get('toNumber', ''),
+                'fromNumber': metadata.get('fromNumber', '')
             })
         elif eng_type == 'TASK':
             formatted_eng.update({
                 'subject': metadata.get('subject', ''),
                 'body': metadata.get('body', ''),
-                'status': metadata.get('status', '')
+                'status': metadata.get('status', ''),
+                'priority': metadata.get('priority', ''),
+                'taskType': metadata.get('taskType', '')
+            })
+        elif eng_type == 'NOTE':
+            formatted_eng.update({
+                'body': metadata.get('body', ''),
+                'preview': (metadata.get('body', '') or '')[:200]
+            })
+        elif eng_type == 'MEETING':
+            formatted_eng.update({
+                'title': metadata.get('title', ''),
+                'body': metadata.get('body', ''),
+                'startTime': metadata.get('startTime', ''),
+                'endTime': metadata.get('endTime', ''),
+                'location': metadata.get('location', '')
+            })
+        else:
+            # Pour tout autre type, capturer les métadonnées de base
+            formatted_eng.update({
+                'title': metadata.get('title', ''),
+                'body': metadata.get('body', ''),
+                'subject': metadata.get('subject', '')
             })
 
         formatted.append(formatted_eng)
@@ -218,14 +245,19 @@ def generate_dashboard_data(engagements):
     formatted_engagements = format_engagements(engagements)
     work_analysis = calculate_work_sessions(formatted_engagements)
 
-    # Statistiques
+    # Statistiques par type
+    type_counts = defaultdict(int)
+    for e in formatted_engagements:
+        type_counts[e['type']] += 1
+
     stats = {
         'total': len(formatted_engagements),
-        'emails': len([e for e in formatted_engagements if e['type'] == 'EMAIL']),
-        'calls': len([e for e in formatted_engagements if e['type'] == 'CALL']),
-        'tasks': len([e for e in formatted_engagements if e['type'] == 'TASK']),
-        'notes': len([e for e in formatted_engagements if e['type'] == 'NOTE']),
-        'meetings': len([e for e in formatted_engagements if e['type'] == 'MEETING']),
+        'emails': type_counts.get('EMAIL', 0),
+        'calls': type_counts.get('CALL', 0),
+        'tasks': type_counts.get('TASK', 0),
+        'notes': type_counts.get('NOTE', 0),
+        'meetings': type_counts.get('MEETING', 0),
+        'by_type': dict(type_counts)  # Tous les types
     }
 
     # Dates
@@ -321,8 +353,19 @@ def main():
         print(f"✅ Données sauvegardées: data.json")
         print(f"\n📈 Résumé:")
         print(f"  • Total activités: {dashboard_data['stats']['total']}")
-        print(f"  • Emails: {dashboard_data['stats']['emails']}")
-        print(f"  • Appels: {dashboard_data['stats']['calls']}")
+
+        # Afficher tous les types d'engagements
+        by_type = dashboard_data['stats'].get('by_type', {})
+        for eng_type, count in sorted(by_type.items()):
+            type_emoji = {
+                'EMAIL': '📧',
+                'CALL': '📞',
+                'TASK': '✅',
+                'NOTE': '📝',
+                'MEETING': '🤝'
+            }.get(eng_type, '📌')
+            print(f"  • {type_emoji} {eng_type}: {count}")
+
         print(f"  • Temps de travail: {dashboard_data['stats']['work']['totalDuree']}h")
         print(f"  • Jours actifs: {dashboard_data['stats']['work']['joursActifs']}")
         print(f"\n✨ Mise à jour terminée avec succès!")
