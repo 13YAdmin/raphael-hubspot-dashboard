@@ -56,11 +56,11 @@ def fetch_engagements():
         # Filtrer les engagements de Raphaël après la date de début
         for eng in data.get('results', []):
             engagement = eng.get('engagement', {})
-            timestamp = engagement.get('timestamp', 0)
             eng_type = engagement.get('type')
-            dt = datetime.fromtimestamp(timestamp / 1000)
 
-            if timestamp < start_timestamp:
+            # Utiliser createdAt pour filtrer par date de CRÉATION, pas date d'échéance/prévue
+            created_at = engagement.get('createdAt', 0)
+            if created_at < start_timestamp:
                 continue
 
             # Vérifier que c'est bien un engagement de Raphaël
@@ -105,8 +105,10 @@ def format_engagements(engagements):
         associations = eng_data.get('associations', {})
 
         eng_type = engagement.get('type')
-        timestamp = engagement.get('timestamp', 0)
-        dt = datetime.fromtimestamp(timestamp / 1000)
+        # Utiliser createdAt = date de CRÉATION de l'engagement (quand Raphaël a fait l'action)
+        # Pas timestamp qui peut être une date future (échéance tâche, date réunion prévue)
+        created_at = engagement.get('createdAt', 0)
+        dt = datetime.fromtimestamp(created_at / 1000)
 
         # Construire l'URL HubSpot correcte
         contact_ids = associations.get('contactIds', [])
@@ -119,7 +121,7 @@ def format_engagements(engagements):
         formatted_eng = {
             'id': str(engagement.get('id')),
             'type': eng_type,
-            'timestamp': timestamp,
+            'timestamp': created_at,  # Date de création de l'action
             'date': dt.strftime('%Y-%m-%d'),
             'datetime': dt.strftime('%d/%m/%Y %H:%M'),
             'time': dt.strftime('%H:%M'),
