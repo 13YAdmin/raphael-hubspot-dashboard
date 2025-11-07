@@ -36,6 +36,9 @@ def fetch_engagements():
 
     all_engagements = []
     sequence_emails_excluded = 0
+    calls_found = 0
+    calls_excluded = 0
+    all_types = {}
     offset = 0
     has_more = True
 
@@ -59,6 +62,10 @@ def fetch_engagements():
             eng_type = engagement.get('type')
             dt = datetime.fromtimestamp(timestamp / 1000)
 
+            # Compter tous les types pour statistiques
+            if timestamp >= start_timestamp:
+                all_types[eng_type] = all_types.get(eng_type, 0) + 1
+
             if timestamp < start_timestamp:
                 continue
 
@@ -66,6 +73,12 @@ def fetch_engagements():
             owner_id = engagement.get('ownerId')
             associations = eng.get('associations', {})
             contact_ids = associations.get('contactIds', [])
+
+            # Logger les appels pour debug
+            if eng_type == 'CALL':
+                calls_found += 1
+                metadata = eng.get('metadata', {})
+                print(f"  📞 CALL trouvé: ownerID={owner_id}, contacts={contact_ids[:3]}, title={metadata.get('title', 'N/A')[:50]}")
 
             # Filtrer: owner ID de Raphaël OU Raphaël dans les contacts (pour les emails)
             is_raphael_owner = str(owner_id) == str(RAPHAEL_OWNER_ID)
@@ -80,6 +93,9 @@ def fetch_engagements():
                         continue
 
                 all_engagements.append(eng)
+            elif eng_type == 'CALL':
+                calls_excluded += 1
+                print(f"    ❌ CALL exclu car ownerID={owner_id} != {RAPHAEL_OWNER_ID} et contact {RAPHAEL_CONTACT_ID} pas dans {contact_ids[:3]}")
 
         has_more = data.get('hasMore', False)
         offset = data.get('offset', 0)
@@ -90,6 +106,12 @@ def fetch_engagements():
     print(f"✅ Total récupéré : {len(all_engagements)} engagements")
     if sequence_emails_excluded > 0:
         print(f"📧 Emails de séquence exclus : {sequence_emails_excluded}")
+
+    print(f"\n🔍 TOUS les types d'engagements trouvés dans la période (avant filtre):")
+    for eng_type, count in sorted(all_types.items()):
+        print(f"  • {eng_type}: {count}")
+
+    print(f"\n📞 Appels (CALL) trouvés: {calls_found}, dont {calls_excluded} exclus par le filtre owner/contact")
     return all_engagements
 
 def format_engagements(engagements):
