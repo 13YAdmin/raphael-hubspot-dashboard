@@ -14,7 +14,8 @@ from collections import defaultdict
 HUBSPOT_TOKEN = os.environ.get('HUBSPOT_TOKEN')
 PORTAL_ID = "146716340"
 RAPHAEL_CONTACT_ID = "442451012837"
-RAPHAEL_OWNER_ID = "29926733"  # Owner ID de Raphaël dans HubSpot
+RAPHAEL_OWNER_ID = "29926733"  # Owner ID de Raphaël dans HubSpot (tasks, meetings)
+RAPHAEL_OWNER_ID_CALLS = "29974224"  # Owner ID de Raphaël pour les appels
 COMPANY_13_YEARS_ID = "234376298682"
 BASE_URL = "https://api.hubapi.com"
 SESSION_GAP_MINUTES = 65
@@ -83,7 +84,7 @@ def fetch_engagements():
 
             # Filtrer: owner ID de Raphaël OU Raphaël dans les contacts OU company 13 Years
             company_ids = associations.get('companyIds', [])
-            is_raphael_owner = str(owner_id) == str(RAPHAEL_OWNER_ID)
+            is_raphael_owner = str(owner_id) in [str(RAPHAEL_OWNER_ID), str(RAPHAEL_OWNER_ID_CALLS)]
             is_raphael_in_contacts = RAPHAEL_CONTACT_ID in [str(cid) for cid in contact_ids]
             is_13years_company = COMPANY_13_YEARS_ID in [str(cid) for cid in company_ids]
 
@@ -98,7 +99,7 @@ def fetch_engagements():
                 all_engagements.append(eng)
             elif eng_type == 'CALL':
                 calls_excluded += 1
-                print(f"    ❌ CALL exclu: owner={owner_id} (attendu: {RAPHAEL_OWNER_ID}), contact {RAPHAEL_CONTACT_ID} absent, company {COMPANY_13_YEARS_ID} absent")
+                print(f"    ❌ CALL exclu: owner={owner_id} (attendu: {RAPHAEL_OWNER_ID} ou {RAPHAEL_OWNER_ID_CALLS}), contact {RAPHAEL_CONTACT_ID} absent, company {COMPANY_13_YEARS_ID} absent")
 
         has_more = data.get('hasMore', False)
         offset = data.get('offset', 0)
