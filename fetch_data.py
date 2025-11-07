@@ -78,13 +78,16 @@ def fetch_engagements():
             if eng_type == 'CALL':
                 calls_found += 1
                 metadata = eng.get('metadata', {})
-                print(f"  📞 CALL trouvé: ownerID={owner_id}, contacts={contact_ids[:3]}, title={metadata.get('title', 'N/A')[:50]}")
+                company_ids = associations.get('companyIds', [])
+                print(f"  📞 CALL: owner={owner_id}, contacts={contact_ids[:2]}, companies={company_ids[:2]}, from={metadata.get('fromNumber', 'N/A')}, to={metadata.get('toNumber', 'N/A')}")
 
-            # Filtrer: owner ID de Raphaël OU Raphaël dans les contacts (pour les emails)
+            # Filtrer: owner ID de Raphaël OU Raphaël dans les contacts OU company 13 Years
+            company_ids = associations.get('companyIds', [])
             is_raphael_owner = str(owner_id) == str(RAPHAEL_OWNER_ID)
             is_raphael_in_contacts = RAPHAEL_CONTACT_ID in [str(cid) for cid in contact_ids]
+            is_13years_company = COMPANY_13_YEARS_ID in [str(cid) for cid in company_ids]
 
-            if is_raphael_owner or is_raphael_in_contacts:
+            if is_raphael_owner or is_raphael_in_contacts or is_13years_company:
                 # Exclure les emails de séquence
                 if eng_type == 'EMAIL':
                     metadata = eng.get('metadata', {})
@@ -95,7 +98,7 @@ def fetch_engagements():
                 all_engagements.append(eng)
             elif eng_type == 'CALL':
                 calls_excluded += 1
-                print(f"    ❌ CALL exclu car ownerID={owner_id} != {RAPHAEL_OWNER_ID} et contact {RAPHAEL_CONTACT_ID} pas dans {contact_ids[:3]}")
+                print(f"    ❌ CALL exclu: owner={owner_id} (attendu: {RAPHAEL_OWNER_ID}), contact {RAPHAEL_CONTACT_ID} absent, company {COMPANY_13_YEARS_ID} absent")
 
         has_more = data.get('hasMore', False)
         offset = data.get('offset', 0)
