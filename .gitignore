@@ -5,3 +5,15 @@ __pycache__/
 *.log
 .vscode/
 .idea/
+
+# Données sensibles
+data.json
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+.env
+*.env
+*_data*
+*secret*
+*password*
