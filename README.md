@@ -6,17 +6,49 @@ Dashboard automatique des activités HubSpot pour Raphaël Cheminaud chez 13 Yea
 
 Le dashboard est accessible à l'adresse : **https://13yadmin.github.io/raphael-hubspot-dashboard/**
 
+### 🔐 Authentification
+
+Le dashboard est protégé par mot de passe. Lors de votre première visite, vous serez redirigé vers une page de connexion.
+
+**Mot de passe** : `raphael2025`
+
+La session reste active pendant 24 heures, puis expire automatiquement pour des raisons de sécurité.
+
 ## 🔄 Mise à jour automatique
 
-Les données sont automatiquement rafraîchies **tous les jours à 17h30** via GitHub Actions.
+Les données sont automatiquement rafraîchies **tous les jours à 16h45** via GitHub Actions.
 
 Le dashboard affiche :
 - 📧 Emails envoyés (hors séquences automatiques)
-- 📞 Appels téléphoniques
+- 📞 Appels téléphoniques avec résultats détaillés (connecté, occupé, pas de réponse, etc.)
 - ✅ Tâches
-- ⏱️ Temps de travail effectif
+- 📝 Notes
+- 🤝 Réunions
+- ⏱️ Temps de travail effectif par jour
+- 💰 Calcul de salaire basé sur les objectifs
 - 📈 Statistiques et graphiques interactifs
-- 🎯 Timeline détaillée jour par jour
+- 🎯 Timeline détaillée jour par jour avec sessions de travail
+
+## 💰 Système de rémunération
+
+Le dashboard calcule automatiquement le salaire proratisé basé sur les objectifs :
+
+### Objectifs quotidiens
+- 30 appels par jour
+- 30 emails par jour
+- Salaire de base : 200€ par jour
+
+### Calcul
+Le salaire est proratisé selon le pourcentage d'accomplissement des objectifs mensuels :
+```
+Salaire proratisé = Salaire de base × (Actions réalisées / Objectifs mensuels)
+```
+
+**Exemple (Novembre 2025 - 14 jours actifs)** :
+- Objectifs : 420 appels + 420 emails = 840 actions
+- Réalisé : 167 appels + 106 emails = 273 actions
+- Taux d'accomplissement : 32.5%
+- Salaire : 910€ sur 2800€ de base
 
 ## 🛠️ Configuration technique
 
@@ -24,25 +56,27 @@ Le dashboard affiche :
 
 - Token HubSpot API configuré dans les secrets GitHub (`HUBSPOT_TOKEN`)
 - GitHub Pages activé sur la branche `main`
+- Repository public pour accès GitHub Pages
 
 ### Structure du projet
 
 ```
 .
-├── index.html              # Dashboard (template)
-├── data.json              # Données actualisées quotidiennement
+├── index.html              # Dashboard principal
+├── login.html             # Page d'authentification
+├── data.json              # Données actualisées quotidiennement (gitignored)
 ├── fetch_data.py          # Script de récupération HubSpot
 ├── .github/
 │   └── workflows/
-│       └── update-dashboard.yml  # Automatisation quotidienne
+│       └── update-dashboard.yml  # Automatisation quotidienne (16h45)
 └── README.md
 ```
 
-### Workflow
+### Workflow automatique
 
-1. **Tous les jours à 17h30** : GitHub Actions exécute `fetch_data.py`
-2. Le script récupère les données HubSpot via API
-3. Génère `data.json` avec toutes les statistiques
+1. **Tous les jours à 16h45** : GitHub Actions exécute `fetch_data.py`
+2. Le script récupère les données HubSpot via API (engagements, appels, emails, etc.)
+3. Génère `data.json` avec toutes les statistiques calculées
 4. Commit et push automatique si changements détectés
 5. GitHub Pages redéploie automatiquement le site
 
@@ -82,10 +116,22 @@ python -m http.server 8000
 - **Seuil d'inactivité** : 30 minutes
 - Si 2 actions sont espacées de plus de 30 minutes, elles appartiennent à des sessions différentes
 - Le temps effectif = somme des durées de toutes les sessions
+- Affichage graphique avec timeline par jour montrant les sessions de travail
+
+### Statistiques d'appels
+
+Le dashboard affiche des statistiques détaillées sur les appels :
+- **Connecté** : Appels aboutis avec conversation
+- **Pas de réponse** : Appels non décrochés
+- **Occupé** : Ligne occupée
+- **Message laissé** : Message vocal ou répondeur
+- **Mauvais numéro** : Numéro incorrect ou invalide
+- Durée moyenne des appels connectés
+- Graphique de répartition des résultats d'appels
 
 ### Période couverte
 
-Le dashboard affiche les données depuis le **lundi dernier** jusqu'à aujourd'hui.
+Le dashboard peut afficher n'importe quelle période configurable. Actuellement configuré pour afficher les données depuis le **1er novembre 2025**.
 
 ## 🚀 Mise à jour manuelle
 
