@@ -19,15 +19,17 @@ La session reste active pendant 24 heures, puis expire automatiquement pour des 
 Les données sont automatiquement rafraîchies **tous les jours à 16h45** via GitHub Actions.
 
 Le dashboard affiche :
+- 📅 **Sélecteur de mois** pour consulter l'historique mensuel complet
 - 📧 Emails envoyés (hors séquences automatiques)
 - 📞 Appels téléphoniques avec résultats détaillés (connecté, occupé, pas de réponse, etc.)
 - ✅ Tâches
 - 📝 Notes
 - 🤝 Réunions
 - ⏱️ Temps de travail effectif par jour
-- 💰 Calcul de salaire basé sur les objectifs
+- 💰 Calcul de salaire proratisé basé sur les objectifs mensuels
 - 📈 Statistiques et graphiques interactifs
 - 🎯 Timeline détaillée jour par jour avec sessions de travail
+- 📊 Historique annuel accessible via sélecteur
 
 ## 💰 Système de rémunération
 
@@ -38,17 +40,27 @@ Le dashboard calcule automatiquement le salaire proratisé basé sur les objecti
 - 30 emails par jour
 - Salaire de base : 200€ par jour
 
-### Calcul
-Le salaire est proratisé selon le pourcentage d'accomplissement des objectifs mensuels :
+### Calcul mensuel automatique
+Le salaire est calculé **automatiquement pour chaque mois** selon :
 ```
-Salaire proratisé = Salaire de base × (Actions réalisées / Objectifs mensuels)
+Objectifs mensuels = Jours actifs × 30 appels + Jours actifs × 30 emails
+Salaire base = Jours actifs × 200€
+Salaire proratisé = Salaire base × (Actions réalisées / Objectifs mensuels)
 ```
 
-**Exemple (Novembre 2025 - 14 jours actifs)** :
-- Objectifs : 420 appels + 420 emails = 840 actions
-- Réalisé : 167 appels + 106 emails = 273 actions
-- Taux d'accomplissement : 32.5%
-- Salaire : 910€ sur 2800€ de base
+**Exemple (Novembre 2025 - 17 jours actifs)** :
+- Objectifs : 510 appels + 510 emails = 1020 actions
+- Réalisé : 261 appels + 140 emails = 401 actions
+- Taux d'accomplissement : 39.3%
+- **Salaire proratisé : 1336€** sur 3400€ de base
+
+## 📅 Historique mensuel
+
+Le dashboard conserve un **historique complet** de tous les mois :
+- Navigation entre les mois via le sélecteur en haut du dashboard
+- Chaque mois affiche ses propres stats, objectifs et salaire
+- Les données sont recalculées automatiquement pour chaque mois selon les jours travaillés
+- Historique accessible depuis novembre 2025 (début chez 13 Years)
 
 ## 🛠️ Configuration technique
 
