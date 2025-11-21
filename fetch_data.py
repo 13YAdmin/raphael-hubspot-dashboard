@@ -329,6 +329,91 @@ def generate_dashboard_data(engagements):
             'count': count
         })
 
+    # Calcul des stats d'appels détaillées
+    disposition_map = {
+        '9d9162e7-6cf3-4944-bf63-4dff82258764': 'Pas de réponse',
+        '73a0d17f-1163-4015-bdd5-ec830791da20': 'Connecté',
+        '62bfe711-0e16-4909-933d-9373418d63d7': 'Occupé',
+        'f240bbac-87c9-4f6e-bf70-924b57d47db7': 'Message laissé',
+        '17b47fee-58de-441e-a44c-c6300d46f273': 'Mauvais numéro',
+        'a4c4c377-d246-4b32-a13b-75a56a4cd0ff': 'Autre',
+        'b2cf5968-551e-4856-9783-52b3da59a7d0': 'Message à une personne'
+    }
+
+    call_details = {
+        'total': 0,
+        'connected': 0,
+        'not_connected': 0,
+        'by_disposition': {},
+        'total_duration_connected': 0,
+        'avg_duration_connected': 0
+    }
+
+    for eng in formatted_engagements:
+        if eng['type'] == 'CALL':
+            call_details['total'] += 1
+            disp_id = eng.get('disposition')
+            if disp_id:
+                label = disposition_map.get(disp_id, 'Non catégorisé')
+                call_details['by_disposition'][label] = call_details['by_disposition'].get(label, 0) + 1
+
+                if disp_id == '73a0d17f-1163-4015-bdd5-ec830791da20':  # Connecté
+                    call_details['connected'] += 1
+                    if eng.get('duration'):
+                        call_details['total_duration_connected'] += eng['duration']
+                else:
+                    call_details['not_connected'] += 1
+
+    # Calculer durée moyenne
+    if call_details['connected'] > 0:
+        call_details['avg_duration_connected'] = round(
+            (call_details['total_duration_connected'] / 1000 / 60) / call_details['connected'], 1
+        )
+    call_details['total_duration_connected'] = round(
+        call_details['total_duration_connected'] / 1000 / 60, 1
+    )
+
+    stats['call_details'] = call_details
+
+    # Calcul des objectifs et salaire
+    jours_actifs = stats['work']['joursActifs']
+    objectifs_config = {
+        'calls_per_day': 30,
+        'emails_per_day': 30,
+        'salary_per_day': 200
+    }
+
+    objectif_calls = objectifs_config['calls_per_day'] * jours_actifs
+    objectif_emails = objectifs_config['emails_per_day'] * jours_actifs
+    objectif_total = objectif_calls + objectif_emails
+
+    realise_calls = stats['calls']
+    realise_emails = stats['emails']
+    realise_total = realise_calls + realise_emails
+
+    taux_calls = round((realise_calls / objectif_calls) * 100, 1) if objectif_calls > 0 else 0
+    taux_emails = round((realise_emails / objectif_emails) * 100, 1) if objectif_emails > 0 else 0
+    taux_global = round((realise_total / objectif_total) * 100, 1) if objectif_total > 0 else 0
+
+    salaire_base = objectifs_config['salary_per_day'] * jours_actifs
+    salaire_proratise = round(salaire_base * (taux_global / 100))
+
+    stats['objectifs'] = {
+        'config': objectifs_config,
+        'jours_actifs': jours_actifs,
+        'objectif_calls': objectif_calls,
+        'objectif_emails': objectif_emails,
+        'objectif_total': objectif_total,
+        'realise_calls': realise_calls,
+        'realise_emails': realise_emails,
+        'realise_total': realise_total,
+        'taux_calls': taux_calls,
+        'taux_emails': taux_emails,
+        'taux_global': taux_global,
+        'salaire_base': salaire_base,
+        'salaire_proratise': salaire_proratise
+    }
+
     return {
         'stats': stats,
         'engagements': formatted_engagements,
