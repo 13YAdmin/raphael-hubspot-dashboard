@@ -419,22 +419,27 @@ def generate_dashboard_data(engagements):
         'session_gap_minutes': SESSION_GAP_MINUTES
     }
 
-def generate_monthly_history(engagements):
-    """Génère l'historique mensuel des données."""
-    # Grouper les engagements par mois
-    monthly_engagements = defaultdict(list)
+def generate_monthly_history(raw_engagements):
+    """Génère l'historique mensuel des données à partir des engagements bruts."""
+    # D'abord, grouper les engagements BRUTS par mois
+    monthly_raw_engagements = defaultdict(list)
 
-    for eng in engagements:
-        # Extraire le mois (YYYY-MM) depuis la date
-        month_key = eng['date'][:7]  # "2025-11-15" -> "2025-11"
-        monthly_engagements[month_key].append(eng)
+    for eng_data in raw_engagements:
+        # Extraire la date depuis les données brutes HubSpot
+        engagement = eng_data.get('engagement', {})
+        created_at = engagement.get('createdAt', 0)
+        if created_at == 0:
+            continue
+        dt = datetime.fromtimestamp(created_at / 1000)
+        month_key = dt.strftime('%Y-%m')  # "2025-11"
+        monthly_raw_engagements[month_key].append(eng_data)
 
     # Générer les données pour chaque mois
     monthly_data = {}
-    for month_key in sorted(monthly_engagements.keys()):
-        month_engs = monthly_engagements[month_key]
-        print(f"  📅 Génération des stats pour {month_key} ({len(month_engs)} engagements)")
-        monthly_data[month_key] = generate_dashboard_data(month_engs)
+    for month_key in sorted(monthly_raw_engagements.keys()):
+        month_raw_engs = monthly_raw_engagements[month_key]
+        print(f"  📅 Génération des stats pour {month_key} ({len(month_raw_engs)} engagements)")
+        monthly_data[month_key] = generate_dashboard_data(month_raw_engs)
 
     # Déterminer le mois actuel
     current_month = datetime.now().strftime('%Y-%m')
@@ -458,15 +463,12 @@ def main():
         exit(1)
 
     try:
-        # Récupérer les données
-        engagements = fetch_engagements()
+        # Récupérer les données BRUTES depuis HubSpot
+        raw_engagements = fetch_engagements()
 
-        # Formater les engagements
-        formatted_engagements = format_engagements(engagements)
-
-        # Générer l'historique mensuel
+        # Générer l'historique mensuel (le formatage se fait par mois dans generate_monthly_history)
         print("\n📊 Génération de l'historique mensuel...")
-        history_data = generate_monthly_history(formatted_engagements)
+        history_data = generate_monthly_history(raw_engagements)
 
         # Sauvegarder les données
         with open('data.json', 'w', encoding='utf-8') as f:
