@@ -911,6 +911,18 @@
     </div>
 
     <script>
+        // Vérification de l'authentification
+        if (!sessionStorage.getItem('authenticated')) {
+            window.location.href = 'login.html';
+        }
+
+        // Vérifier l'expiration de la session (24 heures)
+        const authTime = sessionStorage.getItem('authTime');
+        if (authTime && (Date.now() - parseInt(authTime)) > 24 * 60 * 60 * 1000) {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
         // Global data
         let dashboardData = null;
 

@@ -1,9 +1,9 @@
 name: Update Dashboard
 
 on:
-  # Exécution quotidienne à 17h30 (heure de Paris = 16h30 UTC en hiver, 15h30 UTC en été)
+  # Exécution quotidienne à 16h45 (heure de Paris = 15h45 UTC en hiver, 14h45 UTC en été)
   schedule:
-    - cron: '30 15 * * *'  # 17h30 heure de Paris (UTC+2 en été)
+    - cron: '45 14 * * *'  # 16h45 heure de Paris (UTC+2 en été)
 
   # Permet l'exécution manuelle
   workflow_dispatch:
