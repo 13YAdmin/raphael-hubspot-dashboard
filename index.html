@@ -735,7 +735,12 @@
         <!-- Overview Tab -->
         <div id="overview-tab" class="tab-content active">
             <div class="top-bar">
-                <h2>Vue d'ensemble</h2>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <h2>Vue d'ensemble</h2>
+                    <select id="month-selector" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: var(--text-primary); padding: 8px 15px; border-radius: 8px; font-size: 0.95em; cursor: pointer; outline: none;">
+                        <option value="">Chargement...</option>
+                    </select>
+                </div>
                 <a href="https://app-eu1.hubspot.com/contacts/146716340/record/0-1/442451012837" target="_blank" class="hubspot-link-top">
                     <i class="fas fa-external-link-alt"></i> Ouvrir HubSpot
                 </a>
@@ -1019,18 +1024,47 @@
 
         // Global data
         let dashboardData = null;
+        let allMonthlyData = null;
+        let currentMonth = null;
 
 // Charger les données depuis data.json
 function loadDashboardData() {
     fetch('data.json')
         .then(response => response.json())
         .then(data => {
-            dashboardData = data;
+            allMonthlyData = data;
+            currentMonth = data.current_month;
 
-            // Appeler toutes les fonctions d'initialisation
-            if (typeof initDashboard === 'function') {
-                initDashboard();
-            }
+            // Peupler le sélecteur de mois
+            const selector = document.getElementById('month-selector');
+            selector.innerHTML = '';
+
+            const monthNames = {
+                '01': 'Janvier', '02': 'Février', '03': 'Mars', '04': 'Avril',
+                '05': 'Mai', '06': 'Juin', '07': 'Juillet', '08': 'Août',
+                '09': 'Septembre', '10': 'Octobre', '11': 'Novembre', '12': 'Décembre'
+            };
+
+            data.available_months.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                const [year, monthNum] = month.split('-');
+                option.textContent = `${monthNames[monthNum]} ${year}`;
+                if (month === currentMonth) {
+                    option.selected = true;
+                }
+                selector.appendChild(option);
+            });
+
+            // Charger les données du mois actuel
+            loadMonthData(currentMonth);
+
+            // Écouter les changements de mois
+            selector.addEventListener('change', (e) => {
+                loadMonthData(e.target.value);
+            });
+
+            // Appeler les fonctions d'initialisation
             if (typeof initNavigation === 'function') {
                 initNavigation();
             }
@@ -1038,6 +1072,22 @@ function loadDashboardData() {
         .catch(error => {
             console.error('❌ Erreur chargement données:', error);
         });
+}
+
+// Charger les données d'un mois spécifique
+function loadMonthData(month) {
+    if (!allMonthlyData || !allMonthlyData.monthly_data[month]) {
+        console.error('❌ Données du mois introuvables:', month);
+        return;
+    }
+
+    currentMonth = month;
+    dashboardData = allMonthlyData.monthly_data[month];
+
+    // Rafraîchir l'affichage
+    if (typeof initDashboard === 'function') {
+        initDashboard();
+    }
 }
 
 // Appeler immédiatement si DOM déjà prêt, sinon attendre DOMContentLoaded
