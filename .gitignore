@@ -6,8 +6,8 @@ __pycache__/
 .vscode/
 .idea/
 
-# Données sensibles
-data.json
+# Données sensibles (permettre data.json pour dashboard Raphaël protégé par auth)
+!data.json
 *.json
 !package.json
 !package-lock.json
