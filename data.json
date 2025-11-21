@@ -1,14 +1,14 @@
 {
   "stats": {
-    "total": 457,
+    "total": 459,
     "emails": 52,
-    "calls": 156,
-    "tasks": 186,
+    "calls": 157,
+    "tasks": 187,
     "notes": 15,
     "meetings": 2,
     "by_type": {
-      "TASK": 186,
-      "CALL": 156,
+      "TASK": 187,
+      "CALL": 157,
       "NOTE": 15,
       "EMAIL": 52,
       "INCOMING_EMAIL": 46,
@@ -18,18 +18,18 @@
     "period_end": "21/11/2025",
     "days": 5,
     "work": {
-      "totalDuree": 17.89,
-      "totalActions": 457,
+      "totalDuree": 17.92,
+      "totalActions": 459,
       "joursActifs": 5,
       "moyDuree": 3.58,
       "moyActions": 91
     },
     "call_details": {
-      "total": 156,
-      "connected": 58,
+      "total": 157,
+      "connected": 59,
       "not_connected": 91,
       "by_disposition": {
-        "Connecté": 58,
+        "Connecté": 59,
         "Occupé": 17,
         "Message laissé": 12,
         "Pas de réponse": 58,
@@ -37,7 +37,7 @@
         "Autre": 1,
         "Message à une personne": 1
       },
-      "total_duration_connected": 10.3,
+      "total_duration_connected": 10.4,
       "avg_duration_connected": 0.2
     },
     "objectifs": {
@@ -50,17 +50,49 @@
       "objectif_calls": 150,
       "objectif_emails": 150,
       "objectif_total": 300,
-      "realise_calls": 156,
+      "realise_calls": 157,
       "realise_emails": 52,
-      "realise_total": 208,
-      "taux_calls": 104.0,
+      "realise_total": 209,
+      "taux_calls": 104.7,
       "taux_emails": 34.7,
-      "taux_global": 69.3,
+      "taux_global": 69.7,
       "salaire_base": 1000,
-      "salaire_proratise": 693
+      "salaire_proratise": 697
     }
   },
   "engagements": [
+    {
+      "id": "362093696223",
+      "type": "TASK",
+      "timestamp": 1763723069229,
+      "date": "2025-11-21",
+      "datetime": "21/11/2025 11:04",
+      "time": "11:04",
+      "portal_id": "146716340",
+      "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/543305116898/?engagement=362093696223",
+      "subject": "Rappeler Julia",
+      "body": "",
+      "status": "NOT_STARTED",
+      "priority": "NONE",
+      "taskType": "CALL"
+    },
+    {
+      "id": "361908230339",
+      "type": "CALL",
+      "timestamp": 1763722990105,
+      "date": "2025-11-21",
+      "datetime": "21/11/2025 11:03",
+      "time": "11:03",
+      "portal_id": "146716340",
+      "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/543305116898/?engagement=361908230339",
+      "title": "Appel avec Julia Michaud",
+      "body": "<div style=\"\" dir=\"auto\" data-top-level=\"true\"><p style=\"margin:0;\">NRP</p></div>",
+      "status": "COMPLETED",
+      "duration": 4000,
+      "disposition": "73a0d17f-1163-4015-bdd5-ec830791da20",
+      "toNumber": "+33668404790",
+      "fromNumber": "+33159169044"
+    },
     {
       "id": "362116761812",
       "type": "TASK",
@@ -2992,7 +3024,7 @@
       "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/543305116898/?engagement=360995239136",
       "subject": "Rappeler Julia",
       "body": "",
-      "status": "NOT_STARTED",
+      "status": "COMPLETED",
       "priority": "NONE",
       "taskType": "CALL"
     },
@@ -7419,9 +7451,9 @@
       "date": "2025-11-21",
       "label": "21/11",
       "weekday": "Friday",
-      "total": 40,
+      "total": 42,
       "emails": 3,
-      "calls": 14
+      "calls": 15
     }
   ],
   "work_analysis": [
@@ -7563,17 +7595,17 @@
     },
     {
       "date": "2025-11-21",
-      "nombreActions": 40,
+      "nombreActions": 42,
       "nombreSessions": 1,
       "premierAction": "08:10",
-      "derniereAction": "11:02",
-      "dureeEffective": 2.87,
+      "derniereAction": "11:04",
+      "dureeEffective": 2.9,
       "sessions": [
         {
           "debut": "08:10",
-          "fin": "11:02",
-          "actions": 40,
-          "dureeMin": 172
+          "fin": "11:04",
+          "actions": 42,
+          "dureeMin": 174
         }
       ]
     }
