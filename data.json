@@ -49,17 +49,18 @@
             "salary_per_day": 200
           },
           "jours_actifs": 17,
-          "objectif_calls": 510,
-          "objectif_emails": 510,
-          "objectif_total": 1020,
+          "jours_ouvres_mois": 19,
+          "objectif_calls": 570,
+          "objectif_emails": 570,
+          "objectif_total": 1140,
           "realise_calls": 261,
           "realise_emails": 140,
           "realise_total": 401,
-          "taux_calls": 51.2,
-          "taux_emails": 27.5,
-          "taux_global": 39.3,
-          "salaire_base": 3400,
-          "salaire_proratise": 1336
+          "taux_calls": 45.8,
+          "taux_emails": 24.6,
+          "taux_global": 35.2,
+          "salaire_base": 3800,
+          "salaire_proratise": 1338
         }
       },
       "engagements": [
