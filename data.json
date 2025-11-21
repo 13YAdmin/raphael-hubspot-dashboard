@@ -2,17 +2,17 @@
   "monthly_data": {
     "2025-11": {
       "stats": {
-        "total": 753,
-        "emails": 140,
-        "calls": 261,
-        "tasks": 217,
+        "total": 756,
+        "emails": 141,
+        "calls": 262,
+        "tasks": 218,
         "notes": 60,
         "meetings": 4,
         "by_type": {
-          "TASK": 217,
-          "CALL": 261,
+          "EMAIL": 141,
+          "TASK": 218,
+          "CALL": 262,
           "NOTE": 60,
-          "EMAIL": 140,
           "INCOMING_EMAIL": 71,
           "MEETING": 4
         },
@@ -21,20 +21,20 @@
         "days": 21,
         "work": {
           "totalDuree": 37.74,
-          "totalActions": 753,
+          "totalActions": 756,
           "joursActifs": 17,
           "moyDuree": 2.22,
           "moyActions": 44
         },
         "call_details": {
-          "total": 261,
+          "total": 262,
           "connected": 102,
-          "not_connected": 148,
+          "not_connected": 149,
           "by_disposition": {
+            "Pas de réponse": 93,
             "Connecté": 102,
             "Occupé": 31,
             "Message laissé": 17,
-            "Pas de réponse": 92,
             "Mauvais numéro": 5,
             "Autre": 1,
             "Message à une personne": 2
@@ -53,17 +53,69 @@
           "objectif_calls": 570,
           "objectif_emails": 570,
           "objectif_total": 1140,
-          "realise_calls": 261,
-          "realise_emails": 140,
-          "realise_total": 401,
-          "taux_calls": 45.8,
-          "taux_emails": 24.6,
-          "taux_global": 35.2,
+          "realise_calls": 262,
+          "realise_emails": 141,
+          "realise_total": 403,
+          "taux_calls": 46.0,
+          "taux_emails": 24.7,
+          "taux_global": 35.4,
           "salaire_base": 3800,
-          "salaire_proratise": 1338
+          "salaire_proratise": 1345
         }
       },
       "engagements": [
+        {
+          "id": "361916004550",
+          "type": "EMAIL",
+          "timestamp": 1763734722376,
+          "date": "2025-11-21",
+          "datetime": "21/11/2025 14:18",
+          "time": "14:18",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/542948943047/?engagement=361916004550",
+          "subject": "13 Years x L'Oréal - Nouveau projet",
+          "to": [
+            {
+              "raw": "saaber.aissa@loreal.com",
+              "email": "saaber.aissa@loreal.com"
+            }
+          ],
+          "from": "raphael.cheminaud@13-years.com",
+          "preview": "Cher Saaber,\r\n\r\nMerci encore pour notre échange très constructif de ce matin.\r\n\r\nSuite à un point avec notre fondateur, je me suis rendu compte que j’avais\r\noublié de mentionner un nouveau projet que ",
+          "status": "SENT"
+        },
+        {
+          "id": "362129372378",
+          "type": "TASK",
+          "timestamp": 1763731983947,
+          "date": "2025-11-21",
+          "datetime": "21/11/2025 13:33",
+          "time": "13:33",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/547969660109/?engagement=362129372378",
+          "subject": "Relance tel ",
+          "body": "",
+          "status": "NOT_STARTED",
+          "priority": "NONE",
+          "taskType": "TODO"
+        },
+        {
+          "id": "362128651475",
+          "type": "CALL",
+          "timestamp": 1763731965229,
+          "date": "2025-11-21",
+          "datetime": "21/11/2025 13:32",
+          "time": "13:32",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/547969660109/?engagement=362128651475",
+          "title": "Appel avec Terry Adin",
+          "body": "<div style=\"\" dir=\"auto\" data-top-level=\"true\"><p style=\"margin:0;\">NRP </p></div>",
+          "status": "COMPLETED",
+          "duration": 5000,
+          "disposition": "9d9162e7-6cf3-4944-bf63-4dff82258764",
+          "toNumber": "+33665158627",
+          "fromNumber": "+33159169025"
+        },
         {
           "id": "362093696223",
           "type": "TASK",
@@ -7246,7 +7298,7 @@
           "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/547969660109/?engagement=358005381331",
           "subject": "Relance tel ",
           "body": "",
-          "status": "NOT_STARTED",
+          "status": "COMPLETED",
           "priority": "NONE",
           "taskType": "TODO"
         },
@@ -12563,9 +12615,9 @@
           "date": "2025-11-21",
           "label": "21/11",
           "weekday": "Friday",
-          "total": 42,
-          "emails": 3,
-          "calls": 15
+          "total": 45,
+          "emails": 4,
+          "calls": 16
         }
       ],
       "work_analysis": [
@@ -13139,10 +13191,10 @@
         },
         {
           "date": "2025-11-21",
-          "nombreActions": 42,
-          "nombreSessions": 1,
+          "nombreActions": 45,
+          "nombreSessions": 3,
           "premierAction": "08:10",
-          "derniereAction": "11:04",
+          "derniereAction": "14:18",
           "dureeEffective": 2.9,
           "sessions": [
             {
@@ -13150,6 +13202,18 @@
               "fin": "11:04",
               "actions": 42,
               "dureeMin": 174
+            },
+            {
+              "debut": "13:32",
+              "fin": "13:33",
+              "actions": 2,
+              "dureeMin": 0
+            },
+            {
+              "debut": "14:18",
+              "fin": "14:18",
+              "actions": 1,
+              "dureeMin": 0
             }
           ]
         }
@@ -13190,6 +13254,12 @@
           "lastName": "Bouhadana",
           "email": "elisabeth.bouhadana@loreal.com",
           "count": 3
+        },
+        {
+          "firstName": "Saaber",
+          "lastName": "Aissa",
+          "email": "saaber.aissa@loreal.com",
+          "count": 2
         },
         {
           "firstName": "Catherine",
@@ -13267,12 +13337,6 @@
           "firstName": "Camiot",
           "lastName": "",
           "email": "camiot@as24.com",
-          "count": 1
-        },
-        {
-          "firstName": "Lduguet",
-          "lastName": "",
-          "email": "lduguet@moethennessy.com",
           "count": 1
         }
       ],
