@@ -21,26 +21,22 @@ BASE_URL = "https://api.hubapi.com"
 SESSION_GAP_MINUTES = 30
 
 def fetch_engagements():
-    """Récupère tous les engagements de Raphaël depuis le début de la période."""
+    """Récupère tous les engagements de Raphaël depuis le début de novembre 2025."""
     headers = {
         'Authorization': f'Bearer {HUBSPOT_TOKEN}',
         'Content-Type': 'application/json'
     }
 
-    # Date de début : lundi dernier
-    today = datetime.now()
-    days_since_monday = (today.weekday() - 0) % 7
-    if days_since_monday == 0 and today.hour < 17:
-        days_since_monday = 7
-    monday = today - timedelta(days=days_since_monday)
-    start_timestamp = int(monday.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000)
+    # Date de début : 1er novembre 2025 (début de Raphaël chez 13 Years)
+    start_date = datetime(2025, 11, 1)
+    start_timestamp = int(start_date.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000)
 
     all_engagements = []
     sequence_emails_excluded = 0
     offset = 0
     has_more = True
 
-    print(f"📅 Récupération des données depuis le {monday.strftime('%d/%m/%Y')}...")
+    print(f"📅 Récupération des données depuis le {start_date.strftime('%d/%m/%Y')}...")
 
     while has_more:
         url = f"{BASE_URL}/engagements/v1/engagements/paged"
@@ -423,6 +419,35 @@ def generate_dashboard_data(engagements):
         'session_gap_minutes': SESSION_GAP_MINUTES
     }
 
+def generate_monthly_history(engagements):
+    """Génère l'historique mensuel des données."""
+    # Grouper les engagements par mois
+    monthly_engagements = defaultdict(list)
+
+    for eng in engagements:
+        # Extraire le mois (YYYY-MM) depuis la date
+        month_key = eng['date'][:7]  # "2025-11-15" -> "2025-11"
+        monthly_engagements[month_key].append(eng)
+
+    # Générer les données pour chaque mois
+    monthly_data = {}
+    for month_key in sorted(monthly_engagements.keys()):
+        month_engs = monthly_engagements[month_key]
+        print(f"  📅 Génération des stats pour {month_key} ({len(month_engs)} engagements)")
+        monthly_data[month_key] = generate_dashboard_data(month_engs)
+
+    # Déterminer le mois actuel
+    current_month = datetime.now().strftime('%Y-%m')
+    if current_month not in monthly_data and monthly_data:
+        # Si le mois actuel n'a pas de données, prendre le dernier mois disponible
+        current_month = sorted(monthly_data.keys())[-1]
+
+    return {
+        'monthly_data': monthly_data,
+        'current_month': current_month,
+        'available_months': sorted(monthly_data.keys(), reverse=True)
+    }
+
 def main():
     """Point d'entrée principal."""
     print("🚀 Démarrage de la mise à jour du dashboard HubSpot")
@@ -436,32 +461,35 @@ def main():
         # Récupérer les données
         engagements = fetch_engagements()
 
-        # Générer les données du dashboard
-        print("\n📊 Génération des données du dashboard...")
-        dashboard_data = generate_dashboard_data(engagements)
+        # Formater les engagements
+        formatted_engagements = format_engagements(engagements)
+
+        # Générer l'historique mensuel
+        print("\n📊 Génération de l'historique mensuel...")
+        history_data = generate_monthly_history(formatted_engagements)
 
         # Sauvegarder les données
         with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(dashboard_data, f, ensure_ascii=False, indent=2)
+            json.dump(history_data, f, ensure_ascii=False, indent=2)
 
-        print(f"✅ Données sauvegardées: data.json")
-        print(f"\n📈 Résumé:")
-        print(f"  • Total activités: {dashboard_data['stats']['total']}")
+        print(f"\n✅ Données sauvegardées: data.json")
+        print(f"\n📈 Résumé par mois:")
 
-        # Afficher tous les types d'engagements
-        by_type = dashboard_data['stats'].get('by_type', {})
-        for eng_type, count in sorted(by_type.items()):
-            type_emoji = {
-                'EMAIL': '📧',
-                'CALL': '📞',
-                'TASK': '✅',
-                'NOTE': '📝',
-                'MEETING': '🤝'
-            }.get(eng_type, '📌')
-            print(f"  • {type_emoji} {eng_type}: {count}")
+        for month in history_data['available_months']:
+            month_data = history_data['monthly_data'][month]
+            stats = month_data['stats']
+            marker = '🔵' if month == history_data['current_month'] else '⚪'
+            print(f"\n{marker} {month}:")
+            print(f"  • Total activités: {stats['total']}")
+            print(f"  • 📧 Emails: {stats['emails']}")
+            print(f"  • 📞 Appels: {stats.get('calls', 0)}")
+            print(f"  • Temps de travail: {stats['work']['totalDuree']}h")
+            print(f"  • Jours actifs: {stats['work']['joursActifs']}")
 
-        print(f"  • Temps de travail: {dashboard_data['stats']['work']['totalDuree']}h")
-        print(f"  • Jours actifs: {dashboard_data['stats']['work']['joursActifs']}")
+            if 'objectifs' in stats:
+                obj = stats['objectifs']
+                print(f"  • 💰 Salaire proratisé: {obj['salaire_proratise']}€ ({obj['taux_global']}%)")
+
         print(f"\n✨ Mise à jour terminée avec succès!")
 
     except Exception as e:
