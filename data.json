@@ -1,14 +1,14 @@
 {
   "stats": {
-    "total": 455,
+    "total": 457,
     "emails": 52,
-    "calls": 155,
-    "tasks": 185,
+    "calls": 156,
+    "tasks": 186,
     "notes": 15,
     "meetings": 2,
     "by_type": {
-      "TASK": 185,
-      "CALL": 155,
+      "TASK": 186,
+      "CALL": 156,
       "NOTE": 15,
       "EMAIL": 52,
       "INCOMING_EMAIL": 46,
@@ -18,14 +18,81 @@
     "period_end": "21/11/2025",
     "days": 5,
     "work": {
-      "totalDuree": 17.75,
-      "totalActions": 455,
+      "totalDuree": 17.89,
+      "totalActions": 457,
       "joursActifs": 5,
-      "moyDuree": 3.55,
+      "moyDuree": 3.58,
       "moyActions": 91
+    },
+    "call_details": {
+      "total": 156,
+      "connected": 58,
+      "not_connected": 91,
+      "by_disposition": {
+        "Connecté": 58,
+        "Occupé": 17,
+        "Message laissé": 12,
+        "Pas de réponse": 58,
+        "Mauvais numéro": 2,
+        "Autre": 1,
+        "Message à une personne": 1
+      },
+      "total_duration_connected": 10.3,
+      "avg_duration_connected": 0.2
+    },
+    "objectifs": {
+      "config": {
+        "calls_per_day": 30,
+        "emails_per_day": 30,
+        "salary_per_day": 200
+      },
+      "jours_actifs": 5,
+      "objectif_calls": 150,
+      "objectif_emails": 150,
+      "objectif_total": 300,
+      "realise_calls": 156,
+      "realise_emails": 52,
+      "realise_total": 208,
+      "taux_calls": 104.0,
+      "taux_emails": 34.7,
+      "taux_global": 69.3,
+      "salaire_base": 1000,
+      "salaire_proratise": 693
     }
   },
   "engagements": [
+    {
+      "id": "362116761812",
+      "type": "TASK",
+      "timestamp": 1763722940098,
+      "date": "2025-11-21",
+      "datetime": "21/11/2025 11:02",
+      "time": "11:02",
+      "portal_id": "146716340",
+      "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/542743397583/?engagement=362116761812",
+      "subject": "Rappeler Prune",
+      "body": "",
+      "status": "NOT_STARTED",
+      "priority": "NONE",
+      "taskType": "CALL"
+    },
+    {
+      "id": "362184054970",
+      "type": "CALL",
+      "timestamp": 1763722533722,
+      "date": "2025-11-21",
+      "datetime": "21/11/2025 10:55",
+      "time": "10:55",
+      "portal_id": "146716340",
+      "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/542743397583/?engagement=362184054970",
+      "title": "Appel avec Prune Houvion",
+      "body": "<div style=\"\" dir=\"auto\" data-top-level=\"true\"><p style=\"margin:0;\">NRP</p></div>",
+      "status": "COMPLETED",
+      "duration": 4000,
+      "disposition": "73a0d17f-1163-4015-bdd5-ec830791da20",
+      "toNumber": "+33619401168",
+      "fromNumber": "+33159169044"
+    },
     {
       "id": "362112625870",
       "type": "TASK",
@@ -4228,7 +4295,7 @@
       "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/542743397583/?engagement=359765529836",
       "subject": "Rappeler Prune",
       "body": "",
-      "status": "NOT_STARTED",
+      "status": "COMPLETED",
       "priority": "NONE",
       "taskType": "CALL"
     },
@@ -7352,9 +7419,9 @@
       "date": "2025-11-21",
       "label": "21/11",
       "weekday": "Friday",
-      "total": 38,
+      "total": 40,
       "emails": 3,
-      "calls": 13
+      "calls": 14
     }
   ],
   "work_analysis": [
@@ -7496,17 +7563,17 @@
     },
     {
       "date": "2025-11-21",
-      "nombreActions": 38,
+      "nombreActions": 40,
       "nombreSessions": 1,
       "premierAction": "08:10",
-      "derniereAction": "10:55",
-      "dureeEffective": 2.73,
+      "derniereAction": "11:02",
+      "dureeEffective": 2.87,
       "sessions": [
         {
           "debut": "08:10",
-          "fin": "10:55",
-          "actions": 38,
-          "dureeMin": 164
+          "fin": "11:02",
+          "actions": 40,
+          "dureeMin": 172
         }
       ]
     }
