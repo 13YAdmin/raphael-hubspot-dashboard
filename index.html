@@ -845,7 +845,10 @@
                                 <span id="salary-prorated">0</span>€
                             </div>
                             <div style="color: var(--text-secondary); font-size: 0.9em; margin-top: 10px;">
-                                Base: <span id="salary-base">0</span>€ (<span id="salary-days">0</span> jours × 200€)
+                                Base: <span id="salary-base">0</span>€ (<span id="salary-days">0</span> jours ouvrés × 200€)
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.85em;">
+                                Jours travaillés: <span id="salary-days-worked">0</span> / <span id="salary-days">0</span> jours ouvrés
                             </div>
                             <div style="color: var(--text-secondary); font-size: 0.9em;">
                                 Taux global: <span id="salary-rate">0%</span>
@@ -1221,7 +1224,8 @@ if (document.readyState === 'loading') {
             // Salaire
             document.getElementById('salary-prorated').textContent = obj.salaire_proratise.toLocaleString('fr-FR');
             document.getElementById('salary-base').textContent = obj.salaire_base.toLocaleString('fr-FR');
-            document.getElementById('salary-days').textContent = obj.jours_actifs;
+            document.getElementById('salary-days').textContent = obj.jours_ouvres_mois || obj.jours_actifs;
+            document.getElementById('salary-days-worked').textContent = obj.jours_actifs;
             document.getElementById('salary-rate').textContent = obj.taux_global + '%';
 
             // Call details

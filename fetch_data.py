@@ -9,6 +9,7 @@ import json
 import requests
 from datetime import datetime, timedelta
 from collections import defaultdict
+import calendar
 
 # Configuration
 HUBSPOT_TOKEN = os.environ.get('HUBSPOT_TOKEN')
@@ -19,6 +20,35 @@ RAPHAEL_OWNER_ID_CALLS = "29974224"  # Owner ID de Raphaël pour les appels
 COMPANY_13_YEARS_ID = "234376298682"
 BASE_URL = "https://api.hubapi.com"
 SESSION_GAP_MINUTES = 30
+
+# Jours fériés français fixes
+JOURS_FERIES_FIXES = {
+    (1, 1): "Jour de l'an",
+    (5, 1): "Fête du travail",
+    (5, 8): "Victoire 1945",
+    (7, 14): "Fête nationale",
+    (8, 15): "Assomption",
+    (11, 1): "Toussaint",
+    (11, 11): "Armistice 1918",
+    (12, 25): "Noël"
+}
+
+def calculate_jours_ouvres(year, month):
+    """Calcule le nombre de jours ouvrés (lundi-vendredi, hors fériés) dans un mois."""
+    # Compter les jours ouvrés (lundi=0 à vendredi=4)
+    jours_ouvres = 0
+    _, nb_jours = calendar.monthrange(year, month)
+
+    for day in range(1, nb_jours + 1):
+        date = datetime(year, month, day)
+
+        # Vérifier si c'est un jour de semaine (lundi-vendredi)
+        if date.weekday() < 5:  # 0-4 = lundi-vendredi
+            # Vérifier si c'est un jour férié
+            if (month, day) not in JOURS_FERIES_FIXES:
+                jours_ouvres += 1
+
+    return jours_ouvres
 
 def fetch_engagements():
     """Récupère tous les engagements de Raphaël depuis le début de novembre 2025."""
@@ -371,16 +401,31 @@ def generate_dashboard_data(engagements):
 
     stats['call_details'] = call_details
 
-    # Calcul des objectifs et salaire
-    jours_actifs = stats['work']['joursActifs']
+    # Calcul des objectifs et salaire basé sur les JOURS OUVRÉS du mois
+    jours_actifs = stats['work']['joursActifs']  # Jours effectivement travaillés
+
+    # Déterminer le mois à partir des données
+    if formatted_engagements:
+        first_date = datetime.strptime(formatted_engagements[0]['date'], '%Y-%m-%d')
+        year = first_date.year
+        month = first_date.month
+    else:
+        # Fallback sur le mois actuel si pas de données
+        year = datetime.now().year
+        month = datetime.now().month
+
+    # Calculer les jours ouvrés théoriques du mois (lun-ven, hors fériés)
+    jours_ouvres_mois = calculate_jours_ouvres(year, month)
+
     objectifs_config = {
         'calls_per_day': 30,
         'emails_per_day': 30,
         'salary_per_day': 200
     }
 
-    objectif_calls = objectifs_config['calls_per_day'] * jours_actifs
-    objectif_emails = objectifs_config['emails_per_day'] * jours_actifs
+    # Objectifs basés sur les jours ouvrés du mois
+    objectif_calls = objectifs_config['calls_per_day'] * jours_ouvres_mois
+    objectif_emails = objectifs_config['emails_per_day'] * jours_ouvres_mois
     objectif_total = objectif_calls + objectif_emails
 
     realise_calls = stats['calls']
@@ -391,12 +436,14 @@ def generate_dashboard_data(engagements):
     taux_emails = round((realise_emails / objectif_emails) * 100, 1) if objectif_emails > 0 else 0
     taux_global = round((realise_total / objectif_total) * 100, 1) if objectif_total > 0 else 0
 
-    salaire_base = objectifs_config['salary_per_day'] * jours_actifs
+    # Salaire basé sur les jours ouvrés du mois
+    salaire_base = objectifs_config['salary_per_day'] * jours_ouvres_mois
     salaire_proratise = round(salaire_base * (taux_global / 100))
 
     stats['objectifs'] = {
         'config': objectifs_config,
-        'jours_actifs': jours_actifs,
+        'jours_actifs': jours_actifs,  # Jours effectivement travaillés
+        'jours_ouvres_mois': jours_ouvres_mois,  # Jours ouvrés théoriques du mois
         'objectif_calls': objectif_calls,
         'objectif_emails': objectif_emails,
         'objectif_total': objectif_total,
