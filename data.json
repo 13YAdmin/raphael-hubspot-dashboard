@@ -2,36 +2,36 @@
   "monthly_data": {
     "2025-11": {
       "stats": {
-        "total": 756,
+        "total": 760,
         "emails": 141,
-        "calls": 262,
-        "tasks": 218,
+        "calls": 264,
+        "tasks": 220,
         "notes": 60,
         "meetings": 4,
         "by_type": {
+          "TASK": 220,
+          "CALL": 264,
           "EMAIL": 141,
-          "TASK": 218,
-          "CALL": 262,
           "NOTE": 60,
           "INCOMING_EMAIL": 71,
           "MEETING": 4
         },
         "period_start": "01/11/2025",
-        "period_end": "21/11/2025",
-        "days": 21,
+        "period_end": "22/11/2025",
+        "days": 22,
         "work": {
           "totalDuree": 37.74,
-          "totalActions": 756,
-          "joursActifs": 17,
-          "moyDuree": 2.22,
-          "moyActions": 44
+          "totalActions": 760,
+          "joursActifs": 18,
+          "moyDuree": 2.1,
+          "moyActions": 42
         },
         "call_details": {
-          "total": 262,
+          "total": 264,
           "connected": 102,
-          "not_connected": 149,
+          "not_connected": 150,
           "by_disposition": {
-            "Pas de réponse": 93,
+            "Pas de réponse": 94,
             "Connecté": 102,
             "Occupé": 31,
             "Message laissé": 17,
@@ -48,22 +48,86 @@
             "emails_per_day": 30,
             "salary_per_day": 200
           },
-          "jours_actifs": 17,
+          "jours_actifs": 18,
           "jours_ouvres_mois": 19,
           "objectif_calls": 570,
           "objectif_emails": 570,
           "objectif_total": 1140,
-          "realise_calls": 262,
+          "realise_calls": 264,
           "realise_emails": 141,
-          "realise_total": 403,
-          "taux_calls": 46.0,
+          "realise_total": 405,
+          "taux_calls": 46.3,
           "taux_emails": 24.7,
-          "taux_global": 35.4,
+          "taux_global": 35.5,
           "salaire_base": 3800,
-          "salaire_proratise": 1345
+          "salaire_proratise": 1349
         }
       },
       "engagements": [
+        {
+          "id": "363159908597",
+          "type": "TASK",
+          "timestamp": 1763798786680,
+          "date": "2025-11-22",
+          "datetime": "22/11/2025 08:06",
+          "time": "08:06",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/422729002211/?engagement=363159908597",
+          "subject": "Rappeler Clémence",
+          "body": "<div style=\"\" dir=\"auto\" data-top-level=\"true\"><p style=\"margin:0;\">Rappeler Clémence et lui demander si elle a des projets actuellement.</p></div>",
+          "status": "NOT_STARTED",
+          "priority": "MEDIUM",
+          "taskType": "CALL"
+        },
+        {
+          "id": "362886951108",
+          "type": "CALL",
+          "timestamp": 1763795736597,
+          "date": "2025-11-22",
+          "datetime": "22/11/2025 07:15",
+          "time": "07:15",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/543305836772/?engagement=362886951108",
+          "title": "Appel entrant du +33614097616 au +33159169044",
+          "body": "",
+          "status": "MISSED",
+          "duration": 0,
+          "disposition": "",
+          "toNumber": "+33159169044",
+          "fromNumber": "+33614097616"
+        },
+        {
+          "id": "362094342351",
+          "type": "TASK",
+          "timestamp": 1763737424507,
+          "date": "2025-11-21",
+          "datetime": "21/11/2025 15:03",
+          "time": "15:03",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/531024181480/?engagement=362094342351",
+          "subject": "Relance tel ",
+          "body": "",
+          "status": "NOT_STARTED",
+          "priority": "NONE",
+          "taskType": "TODO"
+        },
+        {
+          "id": "362150160584",
+          "type": "CALL",
+          "timestamp": 1763737386075,
+          "date": "2025-11-21",
+          "datetime": "21/11/2025 15:03",
+          "time": "15:03",
+          "portal_id": "146716340",
+          "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/531024181480/?engagement=362150160584",
+          "title": "Appel avec Pierre-Emmanuel Ster",
+          "body": "",
+          "status": "COMPLETED",
+          "duration": 5000,
+          "disposition": "9d9162e7-6cf3-4944-bf63-4dff82258764",
+          "toNumber": "+33682628678",
+          "fromNumber": "+33159169025"
+        },
         {
           "id": "361916004550",
           "type": "EMAIL",
@@ -475,7 +539,7 @@
           "portal_id": "146716340",
           "url": "https://app-eu1.hubspot.com/contacts/146716340/contact/542948943047/?engagement=362081237206",
           "title": "Appel avec Saaber Aissa",
-          "body": "<div style=\"\" dir=\"auto\" data-top-level=\"true\"><p style=\"margin:0;\">Saaber travaille pour Armany DMI - Armani beauty - Stratégie / DMI / Levallois-France. - Faire fiche après midi</p></div>",
+          "body": "<div style=\"\" dir=\"auto\" data-top-level=\"true\"><p style=\"margin:0;\">Très bon contact avec Saaber, hyper sympa et très tranquille. Il travaille dans la Communication digitale DMI Armany Beauty et spécialisé sur les RP. Donc il travaille sur l'international essentiellement et s'occupe d'activer des influenceurs sur des pays étrangers. Par exemple là ils cherchent une agence pour \" créer un playbook de stratégie d’influences par franchise. Sur stronger with you comment on active des influenceurs experts? Comment on active des influenceurs lifestyle?\". </p><p style=\"margin:0;\"><br class=\"hs-trailingbreak\"></p><p style=\"margin:0;\">Pas exactement ce qu'on fait, cependant après discussion avec Tony il m'a dit qu'on pouvait parler du projet qu'on est en train d'avoir avec Lancôme sur de l'activation d'influenceurs et la stratégie d'influence. Mail envoyé à Saaber pour demander une mise en contact ou un visio. Il quitte son poste dans une semaine pour partir voyager en Australie donc j'attends peut être qu'il va nous envoyer à son successeur. </p></div>",
           "status": "COMPLETED",
           "duration": 284000,
           "disposition": "62bfe711-0e16-4909-933d-9373418d63d7",
@@ -12615,9 +12679,17 @@
           "date": "2025-11-21",
           "label": "21/11",
           "weekday": "Friday",
-          "total": 45,
+          "total": 47,
           "emails": 4,
-          "calls": 16
+          "calls": 17
+        },
+        {
+          "date": "2025-11-22",
+          "label": "22/11",
+          "weekday": "Saturday",
+          "total": 2,
+          "emails": 0,
+          "calls": 1
         }
       ],
       "work_analysis": [
@@ -13191,10 +13263,10 @@
         },
         {
           "date": "2025-11-21",
-          "nombreActions": 45,
-          "nombreSessions": 3,
+          "nombreActions": 47,
+          "nombreSessions": 4,
           "premierAction": "08:10",
-          "derniereAction": "14:18",
+          "derniereAction": "15:03",
           "dureeEffective": 2.9,
           "sessions": [
             {
@@ -13212,6 +13284,34 @@
             {
               "debut": "14:18",
               "fin": "14:18",
+              "actions": 1,
+              "dureeMin": 0
+            },
+            {
+              "debut": "15:03",
+              "fin": "15:03",
+              "actions": 2,
+              "dureeMin": 0
+            }
+          ]
+        },
+        {
+          "date": "2025-11-22",
+          "nombreActions": 2,
+          "nombreSessions": 2,
+          "premierAction": "07:15",
+          "derniereAction": "08:06",
+          "dureeEffective": 0.0,
+          "sessions": [
+            {
+              "debut": "07:15",
+              "fin": "07:15",
+              "actions": 1,
+              "dureeMin": 0
+            },
+            {
+              "debut": "08:06",
+              "fin": "08:06",
               "actions": 1,
               "dureeMin": 0
             }
